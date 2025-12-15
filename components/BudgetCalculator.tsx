@@ -59,6 +59,25 @@ export const BudgetCalculator: React.FC<BudgetCalculatorProps> = ({ onSave, onBo
     }
   };
 
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+      const item = payload[0];
+      const percentage = Math.round((item.value / budget) * 100);
+      return (
+        <div className="bg-star-900/95 border border-slate-600 p-4 rounded-xl shadow-2xl backdrop-blur-md">
+          <p className="text-gold-500 font-serif font-bold mb-1 text-lg">{item.name}</p>
+          <p className="text-white font-medium text-base mb-1">
+            {formatCurrency(item.value)}
+          </p>
+          <p className="text-slate-400 text-xs uppercase tracking-wider">
+            {percentage}% of Total Budget
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <div className="glass-panel p-8 rounded-2xl w-full max-w-4xl mx-auto my-12 border border-slate-700">
       <div className="text-center mb-8">
@@ -163,14 +182,7 @@ export const BudgetCalculator: React.FC<BudgetCalculatorProps> = ({ onSave, onBo
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip 
-                formatter={(value: number) => {
-                  const percentage = Math.round((value / budget) * 100);
-                  return [`${formatCurrency(value)} (${percentage}% of total)`, 'Allocation'];
-                }}
-                contentStyle={{ backgroundColor: '#0F172A', borderColor: '#475569', color: '#fff', borderRadius: '0.5rem', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)' }}
-                itemStyle={{ color: '#EAB308' }}
-              />
+              <Tooltip content={<CustomTooltip />} />
               <Legend iconType="circle" />
             </PieChart>
           </ResponsiveContainer>
