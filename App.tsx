@@ -34,10 +34,16 @@ const App: React.FC = () => {
     };
     window.addEventListener('scroll', handleScroll);
     
-    // Load saved events
-    const stored = localStorage.getItem('starvnt_events');
-    if (stored) {
-      setSavedEvents(JSON.parse(stored));
+    // Load saved events with Error Handling
+    try {
+      const stored = localStorage.getItem('starvnt_events');
+      if (stored) {
+        setSavedEvents(JSON.parse(stored));
+      }
+    } catch (e) {
+      console.error("Error parsing saved events from local storage:", e);
+      // If data is corrupt, clear it to prevent app crash
+      localStorage.removeItem('starvnt_events');
     }
 
     return () => window.removeEventListener('scroll', handleScroll);

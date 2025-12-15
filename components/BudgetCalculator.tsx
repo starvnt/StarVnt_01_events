@@ -10,6 +10,29 @@ interface BudgetCalculatorProps {
   onBookNow?: (budget: number, type: EventType) => void;
 }
 
+// Defined outside component to maintain stable identity during renders
+const CustomTooltip = ({ active, payload, totalBudget }: any) => {
+  if (active && payload && payload.length) {
+    const item = payload[0];
+    const percentage = Math.round((item.value / totalBudget) * 100);
+    const formatCurrency = (value: number) => 
+      new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumSignificantDigits: 3 }).format(value);
+
+    return (
+      <div className="bg-star-900/95 border border-slate-600 p-4 rounded-xl shadow-2xl backdrop-blur-md">
+        <p className="text-gold-500 font-serif font-bold mb-1 text-lg">{item.name}</p>
+        <p className="text-white font-medium text-base mb-1">
+          {formatCurrency(item.value)}
+        </p>
+        <p className="text-slate-400 text-xs uppercase tracking-wider">
+          {percentage}% of Total Budget
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
 export const BudgetCalculator: React.FC<BudgetCalculatorProps> = ({ onSave, onBookNow }) => {
   const [budget, setBudget] = useState<number>(500000);
   const [eventType, setEventType] = useState<EventType>(EventType.WEDDING);
@@ -57,25 +80,6 @@ export const BudgetCalculator: React.FC<BudgetCalculatorProps> = ({ onSave, onBo
       setEventName('');
       setTimeout(() => setSavedMessage(false), 3000);
     }
-  };
-
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      const item = payload[0];
-      const percentage = Math.round((item.value / budget) * 100);
-      return (
-        <div className="bg-star-900/95 border border-slate-600 p-4 rounded-xl shadow-2xl backdrop-blur-md">
-          <p className="text-gold-500 font-serif font-bold mb-1 text-lg">{item.name}</p>
-          <p className="text-white font-medium text-base mb-1">
-            {formatCurrency(item.value)}
-          </p>
-          <p className="text-slate-400 text-xs uppercase tracking-wider">
-            {percentage}% of Total Budget
-          </p>
-        </div>
-      );
-    }
-    return null;
   };
 
   return (
@@ -182,7 +186,7 @@ export const BudgetCalculator: React.FC<BudgetCalculatorProps> = ({ onSave, onBo
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip content={<CustomTooltip />} />
+              <Tooltip content={<CustomTooltip totalBudget={budget} />} />
               <Legend iconType="circle" />
             </PieChart>
           </ResponsiveContainer>
