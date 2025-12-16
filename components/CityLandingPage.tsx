@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { MapPin, CheckCircle, Star, Calendar, ArrowRight, IndianRupee, CreditCard } from 'lucide-react';
+import { MapPin, CheckCircle, Star, Calendar, IndianRupee, CreditCard } from 'lucide-react';
 import { Button } from './Button';
 import { SEO } from './SEO';
 import { SGEBlock } from './SGEBlock';
@@ -16,7 +16,7 @@ export const CityLandingPage: React.FC<CityLandingPageProps> = ({ city, onBookNo
   // 1. Programmatic Content Generation
   const cityName = city === 'Near Me' ? 'Your Location' : city;
   
-  const getVenueList = (city: string) => {
+  const getVenueList = (targetCity: string) => {
     // Mock database of high-authority local entities
     const venues: Record<string, string[]> = {
         'Kolkata': ['PC Chandra Garden', 'ITC Royal Bengal', 'Raajkutir', 'Eco Park', 'The Oberoi Grand'],
@@ -25,10 +25,11 @@ export const CityLandingPage: React.FC<CityLandingPageProps> = ({ city, onBookNo
         'Bangalore': ['Bangalore Palace', 'The Leela Bhartiya City', 'Taj West End'],
         'Your Location': ['Top 5 Star Hotels', 'Luxury Banquet Halls', 'Heritage Properties', 'Open Air Lawns']
     };
-    return venues[city] || venues['Your Location'];
+    return venues[targetCity] || venues['Your Location'];
   };
 
   const venues = getVenueList(cityName);
+  const topVenue = venues && venues.length > 0 ? venues[0] : 'Premium Venues';
 
   // 2. Dynamic FAQ Schema for AI Overviews
   const cityFAQs = [
@@ -42,7 +43,7 @@ export const CityLandingPage: React.FC<CityLandingPageProps> = ({ city, onBookNo
     },
     {
       question: `Can I plan a wedding in ${cityName} with EMI?`,
-      answer: `Yes, StarVnt brings its exclusive 'Wedding on EMI' service to ${cityName}. You can host your event at top venues like ${venues[0]} and pay in monthly installments.`
+      answer: `Yes, StarVnt brings its exclusive 'Wedding on EMI' service to ${cityName}. You can host your event at top venues like ${topVenue} and pay in monthly installments.`
     }
   ];
 

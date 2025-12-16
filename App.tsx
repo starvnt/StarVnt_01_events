@@ -16,7 +16,7 @@ import { SEO } from './components/SEO';
 import { VideoModal } from './components/VideoModal';
 import { CityLandingPage } from './components/CityLandingPage';
 import { SGEBlock } from './components/SGEBlock';
-import { AIPlannerPage } from './components/AIPlannerPage'; // Imported
+import { AIPlannerPage } from './components/AIPlannerPage';
 import { SavedEvent, EventType } from './types';
 import { initEmailService } from './services/emailService';
 

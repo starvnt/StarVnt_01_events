@@ -1,14 +1,26 @@
 
 import { GoogleGenAI, Chat, GenerateContentResponse } from "@google/genai";
-import { ChatMessage } from "../types";
 
-const apiKey = process.env.API_KEY || '';
+// Safe access to process.env for browser environments
+const getApiKey = () => {
+  try {
+    // @ts-ignore
+    return process?.env?.API_KEY || '';
+  } catch {
+    return '';
+  }
+};
 
-// Initialize client only if key exists (handled gracefully in UI if not)
+const apiKey = getApiKey();
+
+// Initialize client only if key exists
 const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
 
 export const createAuraChat = (): Chat | null => {
-  if (!ai) return null;
+  if (!ai) {
+    console.warn("Aura+ AI Warning: API Key is missing. Chat will be in offline mode.");
+    return null;
+  }
   
   return ai.chats.create({
     model: 'gemini-2.5-flash',
