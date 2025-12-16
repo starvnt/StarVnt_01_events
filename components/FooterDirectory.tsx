@@ -2,33 +2,48 @@
 import React from 'react';
 
 const LOCATIONS = ['Kolkata', 'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Jaipur', 'Goa', 'Udaipur'];
-const SERVICES = ['Wedding Planner', 'Corporate Events', 'Birthday Decoration', 'DJ Booking', 'Photographers', 'Makeup Artists'];
 const USP_TERMS = ['AI Event Planner', 'Wedding on EMI', 'Luxury Gifting', 'Budget Calculator'];
 
-export const FooterDirectory: React.FC = () => {
+interface FooterDirectoryProps {
+  onCitySelect?: (city: string) => void;
+}
+
+export const FooterDirectory: React.FC<FooterDirectoryProps> = ({ onCitySelect }) => {
+  
+  const handleCityClick = (e: React.MouseEvent, city: string) => {
+    e.preventDefault();
+    if (onCitySelect) onCitySelect(city);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div className="bg-black border-t border-slate-900 py-12 px-6">
       <div className="max-w-7xl mx-auto">
         <h5 className="text-gold-500 font-bold uppercase tracking-widest text-xs mb-6 border-b border-slate-800 pb-2">
-          StarVnt Ecosystem • Search Directory
+          StarVnt Ecosystem • Authority Directory
         </h5>
         
         <div className="grid md:grid-cols-4 gap-8 text-xs text-slate-600">
           
-          {/* Column 1: Top Services by City (Programmatic SEO Simulation) */}
+          {/* Column 1: Programmatic City Pages (SEO Engine) */}
           <div>
-            <h6 className="text-slate-400 font-semibold mb-3">Popular Searches</h6>
+            <h6 className="text-slate-400 font-semibold mb-3">Find Us Near You</h6>
             <ul className="space-y-2">
+              <li>
+                  <a href="#" onClick={(e) => handleCityClick(e, 'Near Me')} className="hover:text-gold-500 transition-colors font-bold text-slate-300">
+                    Event Planner Near Me
+                  </a>
+              </li>
               {LOCATIONS.slice(0, 5).map(city => (
                 <li key={city}>
-                  <a href={`#`} className="hover:text-gold-500 transition-colors">
+                  <a href="#" onClick={(e) => handleCityClick(e, city)} className="hover:text-gold-500 transition-colors">
                     Wedding Planner in {city}
                   </a>
                 </li>
               ))}
               {LOCATIONS.slice(0, 3).map(city => (
                 <li key={`corp-${city}`}>
-                  <a href={`#`} className="hover:text-gold-500 transition-colors">
+                  <a href="#" onClick={(e) => handleCityClick(e, city)} className="hover:text-gold-500 transition-colors">
                     Corporate Events in {city}
                   </a>
                 </li>

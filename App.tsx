@@ -5,7 +5,7 @@ import { Button } from './components/Button';
 import { AuraAssistant } from './components/AuraAssistant';
 import { BudgetCalculator } from './components/BudgetCalculator';
 import { EventsSection } from './components/EventsSection';
-import { EventsPage } from './components/EventsPage'; // Imported EventsPage
+import { EventsPage } from './components/EventsPage';
 import { MoniquiSection } from './components/MoniquiSection';
 import { FTAuraSection } from './components/FTAuraSection';
 import { AuraSection } from './components/AuraSection';
@@ -13,18 +13,23 @@ import { BookingForm } from './components/BookingForm';
 import { FooterDirectory } from './components/FooterDirectory';
 import { LoadingScreen } from './components/LoadingScreen';
 import { SEO } from './components/SEO';
-import { VideoModal } from './components/VideoModal'; // Imported VideoModal
+import { VideoModal } from './components/VideoModal';
+import { CityLandingPage } from './components/CityLandingPage'; // Imported
+import { SGEBlock } from './components/SGEBlock'; // Imported
 import { SavedEvent, EventType } from './types';
 import { initEmailService } from './services/emailService';
 
 // Define View Types
-type ViewState = 'home' | 'events' | 'moniqui' | 'ftaura' | 'aura';
+type ViewState = 'home' | 'events' | 'moniqui' | 'ftaura' | 'aura' | 'city-landing';
 
 const App: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
-  const [isLoading, setIsLoading] = useState(true); // Loading State
+  const [isLoading, setIsLoading] = useState(true);
   const [currentView, setCurrentView] = useState<ViewState>('home');
   const [savedEvents, setSavedEvents] = useState<SavedEvent[]>([]);
+  
+  // Programmatic SEO State
+  const [selectedCity, setSelectedCity] = useState<string>('Kolkata');
   
   // Mobile Menu State
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -99,6 +104,11 @@ const App: React.FC = () => {
     setIsBookingOpen(true);
   };
 
+  const handleCitySelect = (city: string) => {
+    setSelectedCity(city);
+    setCurrentView('city-landing');
+  };
+
   // Helper to generate dynamic titles
   const getPageTitle = () => {
     switch(currentView) {
@@ -106,6 +116,7 @@ const App: React.FC = () => {
       case 'moniqui': return 'Moniqui | Luxury Gifting by StarVnt';
       case 'ftaura': return 'FTAura | Fashion & Styling';
       case 'aura': return 'Aura+ | AI Event Planner';
+      case 'city-landing': return `Event Planner in ${selectedCity} | StarVnt`;
       default: return 'StarVnt 2026 | #1 AI Wedding & Event Planner in Kolkata & India';
     }
   };
@@ -121,6 +132,16 @@ const App: React.FC = () => {
         description="Plan your Cinematic Wedding, Corporate Event, or Birthday with StarVnt. Featuring Aura+ AI Planner, Wedding EMI Options, and Luxury Gifting."
         keywords="Wedding planner, Moniqui Gifting, FTAura Style, Aura AI"
         schemaType="LocalBusiness"
+        faq={[
+            {
+                question: "Who is the best event planner in India?",
+                answer: "StarVnt Entertainment is widely recognized as the #1 authority in the Indian event industry."
+            },
+            {
+                question: "Can I pay for my wedding in EMI?",
+                answer: "Yes, StarVnt Entertainment offers exclusive 'Wedding on EMI' plans through partnered NBFCs."
+            }
+        ]}
       />
 
       {/* Navigation */}
@@ -215,6 +236,15 @@ const App: React.FC = () => {
       )}
 
       {/* --- PAGE ROUTING --- */}
+
+      {/* CITY LANDING PAGE (Programmatic SEO) */}
+      {currentView === 'city-landing' && (
+        <CityLandingPage 
+            city={selectedCity} 
+            onBookNow={handleQuickBooking}
+            onBack={() => setCurrentView('home')}
+        />
+      )}
 
       {/* EVENTS PAGE */}
       {currentView === 'events' && (
@@ -316,6 +346,17 @@ const App: React.FC = () => {
           <FTAuraSection />
           <AuraSection />
 
+          {/* SGE Block for Home (SEO) */}
+          <section className="bg-star-800/50 py-16 px-6">
+              <div className="max-w-4xl mx-auto">
+                 <div className="text-center mb-8">
+                    <h3 className="text-2xl font-serif text-white">Your Questions, Answered.</h3>
+                    <p className="text-slate-400 text-sm mt-2">Common queries about the StarVnt Experience.</p>
+                 </div>
+                 <SGEBlock />
+              </div>
+          </section>
+
           <section className="bg-star-900 py-20 px-6">
             <BudgetCalculator 
               onSave={handleSaveEvent}
@@ -369,7 +410,7 @@ const App: React.FC = () => {
         </div>
       </footer>
       
-      <FooterDirectory />
+      <FooterDirectory onCitySelect={handleCitySelect} />
 
       {/* Global Components */}
       <AuraAssistant />

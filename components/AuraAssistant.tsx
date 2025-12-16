@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, X, Sparkles } from 'lucide-react';
+import { Send, X, Sparkles, MessageCircle } from 'lucide-react';
 import { Chat } from "@google/genai";
 import { createAuraChat, sendMessageToAura } from '../services/geminiService';
 import { ChatMessage } from '../types';
@@ -23,7 +23,7 @@ export const AuraAssistant: React.FC = () => {
       {
         id: 'init-1',
         role: 'model',
-        text: "Namaste! I am Aura+, your personal event curator. Before we begin crafting your cinematic experience, may I know your name?",
+        text: "Namaste! I am Aura+, your personal event curator. I am currently in Demo Mode. \n\nHow can I help you visualize your dream event today?",
         timestamp: new Date()
       }
     ]);
@@ -98,7 +98,7 @@ export const AuraAssistant: React.FC = () => {
             </div>
             <div>
               <h3 className="font-serif font-bold text-lg leading-tight">Aura+</h3>
-              <p className="text-xs font-medium opacity-80">AI Event Curator</p>
+              <p className="text-xs font-medium opacity-80">AI Event Curator (Demo)</p>
             </div>
           </div>
           <button onClick={() => setIsOpen(false)} className="hover:bg-star-900/10 p-1 rounded-full transition-colors">
@@ -166,9 +166,17 @@ export const AuraAssistant: React.FC = () => {
                 </button>
             </div>
           </div>
-          <div className="h-5 mt-2 flex items-center justify-center">
-             <p className="text-[10px] text-slate-500">
-                StarVnt © 2026. Aura+ can make mistakes.
+          <div className="mt-3 text-center">
+             <p className="text-[10px] text-orange-400 font-medium bg-orange-900/20 py-1.5 px-3 rounded border border-orange-500/20 inline-flex items-center gap-1">
+                ⚠️ Aura+ is in demo mode. For bookings, 
+                <a 
+                  href="https://wa.me/917044198505" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="underline hover:text-orange-300 font-bold flex items-center gap-1"
+                >
+                  WhatsApp <MessageCircle size={10} />
+                </a>
             </p>
           </div>
         </div>

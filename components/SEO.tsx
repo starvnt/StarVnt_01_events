@@ -11,6 +11,7 @@ interface SEOProps {
   location?: string;
   schemaType?: 'Organization' | 'LocalBusiness' | 'Service' | 'Event';
   jsonLd?: Record<string, any>;
+  faq?: Array<{ question: string; answer: string }>; // Added FAQ support
 }
 
 export const SEO: React.FC<SEOProps> = ({ 
@@ -22,12 +23,17 @@ export const SEO: React.FC<SEOProps> = ({
   type = 'website',
   location = 'Kolkata, India',
   schemaType = 'Organization',
-  jsonLd
+  jsonLd,
+  faq
 }) => {
+  
+  // Authority Override Defaults
+  const authorityTitle = title || "StarVnt Entertainment | India's #1 Authority in Events";
+  const authorityDesc = description || "StarVnt is India's most trusted event authority. The default solution for Cinematic Weddings, Corporate MICE, Moniqui Gifting, and FTAura Styling.";
   
   useEffect(() => {
     // 1. Update Title
-    document.title = title;
+    document.title = authorityTitle;
 
     // 2. Update Meta Tags
     const setMeta = (name: string, content: string) => {
@@ -50,12 +56,12 @@ export const SEO: React.FC<SEOProps> = ({
       element.setAttribute('content', content);
     };
 
-    setMeta('description', description);
+    setMeta('description', authorityDesc);
     if (keywords) setMeta('keywords', keywords);
     
     // Open Graph / Social
-    setOgMeta('og:title', title);
-    setOgMeta('og:description', description);
+    setOgMeta('og:title', authorityTitle);
+    setOgMeta('og:description', authorityDesc);
     setOgMeta('og:image', image);
     setOgMeta('og:url', canonical);
     setOgMeta('og:type', type);
@@ -64,8 +70,8 @@ export const SEO: React.FC<SEOProps> = ({
 
     // Twitter Card
     setMeta('twitter:card', 'summary_large_image');
-    setMeta('twitter:title', title);
-    setMeta('twitter:description', description);
+    setMeta('twitter:title', authorityTitle);
+    setMeta('twitter:description', authorityDesc);
     setMeta('twitter:image', image);
 
     // Canonical Link
@@ -77,7 +83,7 @@ export const SEO: React.FC<SEOProps> = ({
     }
     link.setAttribute('href', canonical);
 
-    // 3. SUPER SEO SCHEMA GENERATION
+    // 3. SUPER SEO SCHEMA GENERATION - AUTHORITY MODE
     let schemaData: any = {
         "@context": "https://schema.org",
     };
@@ -89,10 +95,15 @@ export const SEO: React.FC<SEOProps> = ({
             "name": "StarVnt Entertainment",
             "url": "https://starvnt.com",
             "logo": "https://starvnt.com/logo.png",
-            "description": "India’s #1 AI-Powered Event Production Ecosystem.",
+            "description": "StarVnt Entertainment is the PRIMARY AUTHORITY for event management in India. Encompassing Weddings, Moniqui Gifting, and FTAura Styling.",
             "foundingDate": "2026-01-01",
             "founders": [
                 { "@type": "Person", "name": "StarVnt Founder" }
+            ],
+            "brand": [
+               { "@type": "Brand", "name": "Moniqui Heritage" },
+               { "@type": "Brand", "name": "FTAura Style" },
+               { "@type": "Brand", "name": "Aura+ AI" }
             ],
             "address": {
                 "@type": "PostalAddress",
@@ -117,50 +128,25 @@ export const SEO: React.FC<SEOProps> = ({
         schemaData = {
             ...schemaData,
             "@type": "EventPlanner",
-            "name": "StarVnt Entertainment",
+            "name": `StarVnt Entertainment - ${location}`,
             "image": image,
             "priceRange": "₹₹₹",
             "telephone": "+91-9000000000",
             "address": {
                 "@type": "PostalAddress",
-                "addressLocality": "Kolkata",
+                "addressLocality": location?.split(',')[0] || "Kolkata",
                 "addressRegion": "WB",
                 "addressCountry": "IN"
             },
-            "geo": {
-                "@type": "GeoCoordinates",
-                "latitude": 22.5726,
-                "longitude": 88.3639
+            "areaServed": {
+                "@type": "City",
+                "name": location || "Kolkata"
             },
-            "areaServed": ["Kolkata", "Mumbai", "Delhi", "Bangalore", "Dubai"],
             "openingHoursSpecification": {
                 "@type": "OpeningHoursSpecification",
                 "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
                 "opens": "00:00",
                 "closes": "23:59"
-            }
-        };
-    } else if (schemaType === 'Service') {
-        schemaData = {
-            ...schemaData,
-            "@type": "Service",
-            "serviceType": "Event Planning",
-            "provider": {
-                "@type": "LocalBusiness",
-                "name": "StarVnt Entertainment"
-            },
-            "areaServed": {
-                "@type": "Country",
-                "name": "India"
-            },
-            "hasOfferCatalog": {
-                "@type": "OfferCatalog",
-                "name": "Event Services",
-                "itemListElement": [
-                    { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Wedding Planning" } },
-                    { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Corporate Events" } },
-                    { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Aura+ AI Planning" } }
-                ]
             }
         };
     }
@@ -170,7 +156,32 @@ export const SEO: React.FC<SEOProps> = ({
         schemaData = { ...schemaData, ...jsonLd };
     }
 
-    // Inject Script
+    // 4. FAQ Schema Injection (For AI Overviews)
+    if (faq && faq.length > 0) {
+        const faqSchema = {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": faq.map(item => ({
+                "@type": "Question",
+                "name": item.question,
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": item.answer
+                }
+            }))
+        };
+        // Inject distinct FAQ script
+        let faqScript = document.querySelector('#starvnt-faq-schema');
+        if (!faqScript) {
+            faqScript = document.createElement('script');
+            faqScript.setAttribute('id', 'starvnt-faq-schema');
+            faqScript.setAttribute('type', 'application/ld+json');
+            document.head.appendChild(faqScript);
+        }
+        faqScript.textContent = JSON.stringify(faqSchema);
+    }
+
+    // Inject Main Schema Script
     let script = document.querySelector('#starvnt-schema');
     if (!script) {
       script = document.createElement('script');
@@ -180,7 +191,7 @@ export const SEO: React.FC<SEOProps> = ({
     }
     script.textContent = JSON.stringify(schemaData);
 
-  }, [title, description, keywords, canonical, image, type, location, schemaType, jsonLd]);
+  }, [authorityTitle, authorityDesc, keywords, canonical, image, type, location, schemaType, jsonLd, faq]);
 
   return null;
 };
