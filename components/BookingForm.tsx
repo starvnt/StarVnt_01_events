@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { X, CheckCircle, Loader, AlertTriangle, WifiOff } from 'lucide-react';
+import { X, CheckCircle, Loader, AlertTriangle } from 'lucide-react';
 import { Button } from './Button';
 import { sendBookingEmail } from '../services/emailService';
 import { SavedEvent, BookingSubmission } from '../types';
@@ -22,7 +22,6 @@ export const BookingForm: React.FC<BookingFormProps> = ({
 }) => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [isDemoMode, setIsDemoMode] = useState(false);
   const [error, setError] = useState('');
 
   // Initialize budget state with existing data or the minimum requirement
@@ -46,7 +45,6 @@ export const BookingForm: React.FC<BookingFormProps> = ({
     e.preventDefault();
     setLoading(true);
     setError('');
-    setIsDemoMode(false);
 
     // Data Cleaning
     const cleanEmail = formData.email.trim();
@@ -114,16 +112,12 @@ export const BookingForm: React.FC<BookingFormProps> = ({
         amount_paid: finalBudget
       };
 
-      const response = await sendBookingEmail(submission);
-      
-      if (response.demo) {
-        setIsDemoMode(true);
-      }
+      await sendBookingEmail(submission);
       
       setSuccess(true);
     } catch (err: any) {
       console.error(err);
-      // Display the actual error message from the service/backend
+      // Display the actual error message from the service
       setError(err.message || 'Failed to process booking. Please check your connection.');
     } finally {
       setLoading(false);
@@ -132,7 +126,6 @@ export const BookingForm: React.FC<BookingFormProps> = ({
 
   const handleClose = () => {
     setSuccess(false);
-    setIsDemoMode(false);
     setError('');
     setFormData({ name: '', email: '', phone: '', date: '', venue: '', address: '', guests: '' });
     onClose();
@@ -161,35 +154,15 @@ export const BookingForm: React.FC<BookingFormProps> = ({
         
         {success ? (
           <div className="p-12 flex flex-col items-center text-center">
-            {isDemoMode ? (
-              // DEMO MODE SUCCESS SCREEN
-              <>
-                <div className="w-20 h-20 bg-yellow-500/20 rounded-full flex items-center justify-center mb-6 border border-yellow-500/50">
-                  <WifiOff className="w-10 h-10 text-yellow-500" />
-                </div>
-                <h3 className="text-2xl font-serif font-bold text-white mb-2">Booking Simulated</h3>
-                <div className="bg-yellow-900/30 border border-yellow-500/30 p-4 rounded-lg mb-6 text-sm text-yellow-200">
-                  <p className="font-bold mb-1">Backend Server Offline</p>
-                  <p className="opacity-80">The booking was successful in the app, but no email was sent because <code>node server.js</code> is not running.</p>
-                </div>
-                <Button onClick={handleClose} variant="outline" className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-star-900">
-                  Return to Dashboard
-                </Button>
-              </>
-            ) : (
-              // REAL SUCCESS SCREEN
-              <>
-                <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mb-6">
-                  <CheckCircle className="w-10 h-10 text-green-500" />
-                </div>
-                <h3 className="text-2xl font-serif font-bold text-white mb-2">Booking Confirmed!</h3>
-                <p className="text-slate-300 mb-8">
-                  A confirmation email has been sent to <span className="text-gold-500">{formData.email}</span>.
-                  <br/>Welcome to the StarVnt family.
-                </p>
-                <Button onClick={handleClose}>Return to Dashboard</Button>
-              </>
-            )}
+            <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mb-6">
+              <CheckCircle className="w-10 h-10 text-green-500" />
+            </div>
+            <h3 className="text-2xl font-serif font-bold text-white mb-2">Booking Confirmed!</h3>
+            <p className="text-slate-300 mb-8">
+              A confirmation email has been sent to <span className="text-gold-500">{formData.email}</span>.
+              <br/>Welcome to the StarVnt family.
+            </p>
+            <Button onClick={handleClose}>Return to Dashboard</Button>
           </div>
         ) : (
           <>
