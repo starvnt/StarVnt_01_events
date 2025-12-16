@@ -68,19 +68,7 @@
         border: 1px solid rgba(255, 255, 255, 0.1);
       }
     </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "@google/genai": "https://esm.sh/@google/genai@^1.33.0",
-    "lucide-react": "https://esm.sh/lucide-react@^0.561.0",
-    "recharts": "https://esm.sh/recharts@^3.6.0",
-    "@emailjs/browser": "https://esm.sh/@emailjs/browser@^4.4.1"
-  }
-}
-</script>
+
 <!-- Meta Pixel Code -->
 <script>
 !function(f,b,e,v,n,t,s)
@@ -94,12 +82,28 @@ s.parentNode.insertBefore(t,s)}(window, document,'script',
 fbq('init', '1866083200944928');
 fbq('track', 'PageView');
 </script>
-<noscript><img height="1" width="1" style="display:none"
-src="https://www.facebook.com/tr?id=1866083200944928&ev=PageView&noscript=1"
-/></noscript>
 <!-- End Meta Pixel Code -->
+<script type="importmap">
+{
+  "imports": {
+    "lucide-react": "https://esm.sh/lucide-react@^0.561.0",
+    "@google/genai": "https://esm.sh/@google/genai@^1.33.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "recharts": "https://esm.sh/recharts@^3.6.0",
+    "@emailjs/browser": "https://esm.sh/@emailjs/browser@^4.4.1"
+  }
+}
+</script>
 </head>
   <body class="bg-star-900 text-white font-sans antialiased">
+    <!-- Meta Pixel NoScript -->
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1866083200944928&ev=PageView&noscript=1"
+    /></noscript>
+    
     <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
   </body>
 </html>
