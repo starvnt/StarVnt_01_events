@@ -55,9 +55,10 @@ const QUICK_FILTERS = ['Wedding', 'Corporate', 'Music', 'MICE'];
 interface EventsSectionProps {
   onBookNow?: (budget: number, type: EventType) => void;
   onAskAura?: () => void;
+  onExplore?: () => void;
 }
 
-export const EventsSection: React.FC<EventsSectionProps> = ({ onBookNow, onAskAura }) => {
+export const EventsSection: React.FC<EventsSectionProps> = ({ onBookNow, onAskAura, onExplore }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedEvent, setSelectedEvent] = useState<typeof EVENTS_DATA[0] | null>(null);
 
@@ -66,6 +67,9 @@ export const EventsSection: React.FC<EventsSectionProps> = ({ onBookNow, onAskAu
     event.subtitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
     event.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const formatCurrency = (value: number) => 
+    new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumSignificantDigits: 3 }).format(value);
 
   return (
     <section id="events" className="py-24 bg-star-900 relative">
@@ -155,13 +159,14 @@ export const EventsSection: React.FC<EventsSectionProps> = ({ onBookNow, onAskAu
                                   </span>
                                   <Button 
                                     size="sm" 
-                                    className="py-1 px-3 text-xs"
+                                    className="py-1 px-3 text-xs flex items-center gap-1"
+                                    title={`Book starting at ${formatCurrency(event.defaultBudget)}`}
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       if (onBookNow) onBookNow(event.defaultBudget, event.eventType);
                                     }}
                                   >
-                                    Quick Book
+                                    <CalendarCheck size={14} /> Quick Book
                                   </Button>
                                 </div>
                             </div>
@@ -205,6 +210,7 @@ export const EventsSection: React.FC<EventsSectionProps> = ({ onBookNow, onAskAu
                                 View Details
                            </Button>
                            <Button 
+                              title={`Book starting at ${formatCurrency(EVENTS_DATA[0].defaultBudget)}`}
                               onClick={(e) => {
                                 e.stopPropagation();
                                 if (onBookNow) onBookNow(EVENTS_DATA[0].defaultBudget, EVENTS_DATA[0].eventType);
@@ -241,13 +247,14 @@ export const EventsSection: React.FC<EventsSectionProps> = ({ onBookNow, onAskAu
                                 <span className="text-xs text-blue-400 font-bold uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity">View Details</span>
                                 <Button 
                                   size="sm" 
-                                  className="text-xs py-1 px-3 h-auto z-10"
+                                  className="text-xs py-1 px-3 h-auto z-10 flex items-center gap-1"
+                                  title={`Book starting at ${formatCurrency(EVENTS_DATA[1].defaultBudget)}`}
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     if (onBookNow) onBookNow(EVENTS_DATA[1].defaultBudget, EVENTS_DATA[1].eventType);
                                   }}
                                 >
-                                  Quick Book
+                                  <CalendarCheck size={14} /> Quick Book
                                 </Button>
                             </div>
                         </div>
@@ -275,13 +282,14 @@ export const EventsSection: React.FC<EventsSectionProps> = ({ onBookNow, onAskAu
                                 <span className="text-xs text-purple-400 font-bold uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity">View Details</span>
                                 <Button 
                                   size="sm" 
-                                  className="text-xs py-1 px-3 h-auto bg-purple-500 hover:bg-purple-400 text-white z-10"
+                                  className="text-xs py-1 px-3 h-auto bg-purple-500 hover:bg-purple-400 text-white z-10 flex items-center gap-1"
+                                  title={`Book starting at ${formatCurrency(EVENTS_DATA[2].defaultBudget)}`}
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     if (onBookNow) onBookNow(EVENTS_DATA[2].defaultBudget, EVENTS_DATA[2].eventType);
                                   }}
                                 >
-                                  Quick Book
+                                  <CalendarCheck size={14} /> Quick Book
                                 </Button>
                             </div>
                         </div>
@@ -291,10 +299,15 @@ export const EventsSection: React.FC<EventsSectionProps> = ({ onBookNow, onAskAu
             </div>
         )}
         
-        <div className="mt-12 text-center">
-            <p className="text-slate-500 text-sm mb-4">Not sure what you need?</p>
+        <div className="mt-12 flex flex-col md:flex-row justify-center items-center gap-4">
+            <p className="text-slate-500 text-sm md:mr-4">Looking for more details?</p>
+            {onExplore && (
+                <Button variant="outline" className="gap-2" onClick={onExplore}>
+                    Explore All Events <ArrowRight size={16} />
+                </Button>
+            )}
             <Button className="gap-2" onClick={onAskAura}>
-                Ask Aura+ to Recommend <ArrowRight size={16} />
+                Ask Aura+ to Recommend <Sparkles size={16} />
             </Button>
         </div>
 

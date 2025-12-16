@@ -13,6 +13,7 @@ import { BookingForm } from './components/BookingForm';
 import { FooterDirectory } from './components/FooterDirectory';
 import { LoadingScreen } from './components/LoadingScreen';
 import { SEO } from './components/SEO';
+import { VideoModal } from './components/VideoModal'; // Imported VideoModal
 import { SavedEvent, EventType } from './types';
 import { initEmailService } from './services/emailService';
 
@@ -32,6 +33,9 @@ const App: React.FC = () => {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [bookingEventData, setBookingEventData] = useState<SavedEvent | null>(null);
   const [tempBookingData, setTempBookingData] = useState<{budget: number, type: EventType} | undefined>(undefined);
+
+  // Video Modal State
+  const [isVideoOpen, setIsVideoOpen] = useState(false);
 
   useEffect(() => {
     initEmailService();
@@ -286,7 +290,12 @@ const App: React.FC = () => {
                 <Button size="lg" onClick={() => setCurrentView('events')}>
                   Explore Events
                 </Button>
-                <Button variant="outline" size="lg" className="backdrop-blur-sm bg-star-900/30">
+                <Button 
+                    variant="outline" 
+                    size="lg" 
+                    className="backdrop-blur-sm bg-star-900/30"
+                    onClick={() => setIsVideoOpen(true)}
+                >
                   Watch The Vision
                 </Button>
               </div>
@@ -301,6 +310,7 @@ const App: React.FC = () => {
           <EventsSection 
             onBookNow={handleQuickBooking} 
             onAskAura={() => setCurrentView('aura')} 
+            onExplore={() => setCurrentView('events')} // Added navigation handler
           />
           <MoniquiSection />
           <FTAuraSection />
@@ -363,6 +373,8 @@ const App: React.FC = () => {
 
       {/* Global Components */}
       <AuraAssistant />
+      
+      <VideoModal isOpen={isVideoOpen} onClose={() => setIsVideoOpen(false)} />
 
       <BookingForm 
         isOpen={isBookingOpen} 

@@ -14,19 +14,25 @@ interface BudgetCalculatorProps {
 const CustomTooltip = ({ active, payload, totalBudget }: any) => {
   if (active && payload && payload.length) {
     const item = payload[0];
+    const dataItem = item.payload; // Access original data object
     const percentage = Math.round((item.value / totalBudget) * 100);
     const formatCurrency = (value: number) => 
       new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumSignificantDigits: 3 }).format(value);
 
     return (
-      <div className="bg-star-900/95 border border-slate-600 p-4 rounded-xl shadow-2xl backdrop-blur-md">
+      <div className="bg-star-900/95 border border-slate-600 p-4 rounded-xl shadow-2xl backdrop-blur-md max-w-[220px] z-50">
         <p className="text-gold-500 font-serif font-bold mb-1 text-lg">{item.name}</p>
         <p className="text-white font-medium text-base mb-1">
           {formatCurrency(item.value)}
         </p>
-        <p className="text-slate-400 text-xs uppercase tracking-wider">
+        <p className="text-slate-400 text-xs uppercase tracking-wider mb-2">
           {percentage}% of Total Budget
         </p>
+        {dataItem.description && (
+            <p className="text-slate-300 text-xs italic border-t border-slate-700 pt-2 leading-relaxed">
+              {dataItem.description}
+            </p>
+        )}
       </div>
     );
   }
@@ -44,25 +50,25 @@ export const BudgetCalculator: React.FC<BudgetCalculatorProps> = ({ onSave, onBo
     switch (type) {
       case EventType.WEDDING:
         return [
-          { name: 'Venue & Food', value: total * 0.45 },
-          { name: 'Decor & Production', value: total * 0.20 },
-          { name: 'Media (Photo/Video)', value: total * 0.15 },
-          { name: 'Attire & Makeup', value: total * 0.10 },
-          { name: 'Entertainment', value: total * 0.10 },
+          { name: 'Venue & Food', value: total * 0.45, description: "Banquet charges, catering, and premium beverages." },
+          { name: 'Decor & Production', value: total * 0.20, description: "Floral design, stage setup, lighting, and sound." },
+          { name: 'Media (Photo/Video)', value: total * 0.15, description: "Cinematography, drone shots, and albums." },
+          { name: 'Attire & Makeup', value: total * 0.10, description: "Bridal wear, grooming, and celebrity MUAs." },
+          { name: 'Entertainment', value: total * 0.10, description: "DJ, live bands, and Sangeet choreography." },
         ];
       case EventType.CORPORATE:
         return [
-          { name: 'Venue & Logistics', value: total * 0.40 },
-          { name: 'Tech & AV', value: total * 0.25 },
-          { name: 'F&B', value: total * 0.20 },
-          { name: 'Gifting', value: total * 0.15 },
+          { name: 'Venue & Logistics', value: total * 0.40, description: "Hall rental, transport, and accommodation." },
+          { name: 'Tech & AV', value: total * 0.25, description: "LED walls, sound systems, and live streaming." },
+          { name: 'F&B', value: total * 0.20, description: "Gala dinners, high tea, and refreshments." },
+          { name: 'Gifting', value: total * 0.15, description: "Delegate kits, hampers, and branding." },
         ];
       default:
         return [
-          { name: 'Venue', value: total * 0.30 },
-          { name: 'Decor', value: total * 0.30 },
-          { name: 'Food', value: total * 0.30 },
-          { name: 'Misc', value: total * 0.10 },
+          { name: 'Venue', value: total * 0.30, description: "Location rental costs." },
+          { name: 'Decor', value: total * 0.30, description: "Theming and floral setup." },
+          { name: 'Food', value: total * 0.30, description: "Catering services." },
+          { name: 'Misc', value: total * 0.10, description: "Contingency and extras." },
         ];
     }
   };
@@ -169,7 +175,7 @@ export const BudgetCalculator: React.FC<BudgetCalculatorProps> = ({ onSave, onBo
         </div>
 
         {/* Chart */}
-        <div className="h-[300px] w-full">
+        <div className="h-[300px] w-full relative">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
