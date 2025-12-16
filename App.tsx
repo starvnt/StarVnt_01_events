@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Menu, User, Instagram, Facebook, Youtube, ChevronDown, Search } from 'lucide-react';
+import { Menu, Instagram, Facebook, Youtube, ChevronDown, X } from 'lucide-react';
 import { Button } from './components/Button';
 import { AuraAssistant } from './components/AuraAssistant';
 import { BudgetCalculator } from './components/BudgetCalculator';
@@ -8,9 +8,7 @@ import { EventsSection } from './components/EventsSection';
 import { MoniquiSection } from './components/MoniquiSection';
 import { FTAuraSection } from './components/FTAuraSection';
 import { AuraSection } from './components/AuraSection';
-import { ProfileView } from './components/ProfileView';
 import { BookingForm } from './components/BookingForm';
-import { SearchOverlay } from './components/SearchOverlay';
 import { FooterDirectory } from './components/FooterDirectory';
 import { LoadingScreen } from './components/LoadingScreen'; // Imported Loader
 import { SEO } from './components/SEO';
@@ -18,7 +16,7 @@ import { SavedEvent, EventType } from './types';
 import { initEmailService } from './services/emailService';
 
 // Define View Types
-type ViewState = 'home' | 'profile' | 'events' | 'moniqui' | 'ftaura' | 'aura';
+type ViewState = 'home' | 'events' | 'moniqui' | 'ftaura' | 'aura';
 
 const App: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -26,13 +24,13 @@ const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<ViewState>('home');
   const [savedEvents, setSavedEvents] = useState<SavedEvent[]>([]);
   
+  // Mobile Menu State
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
   // Booking Modal State
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [bookingEventData, setBookingEventData] = useState<SavedEvent | null>(null);
   const [tempBookingData, setTempBookingData] = useState<{budget: number, type: EventType} | undefined>(undefined);
-
-  // Search State
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   useEffect(() => {
     initEmailService();
@@ -58,7 +56,17 @@ const App: React.FC = () => {
   // Reset scroll on view change
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    setIsMobileMenuOpen(false); // Close mobile menu when view changes
   }, [currentView]);
+
+  // Lock scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+  }, [isMobileMenuOpen]);
 
   const handleSaveEvent = (name: string, budget: number, type: EventType) => {
     const newEvent: SavedEvent = {
@@ -70,12 +78,6 @@ const App: React.FC = () => {
       status: 'Draft'
     };
     const updated = [newEvent, ...savedEvents];
-    setSavedEvents(updated);
-    localStorage.setItem('starvnt_events', JSON.stringify(updated));
-  };
-
-  const handleDeleteEvent = (id: string) => {
-    const updated = savedEvents.filter(e => e.id !== id);
     setSavedEvents(updated);
     localStorage.setItem('starvnt_events', JSON.stringify(updated));
   };
@@ -99,7 +101,6 @@ const App: React.FC = () => {
       case 'moniqui': return 'Moniqui | Luxury Gifting by StarVnt';
       case 'ftaura': return 'FTAura | Fashion & Styling';
       case 'aura': return 'Aura+ | AI Event Planner';
-      case 'profile': return 'My Profile | StarVnt';
       default: return 'StarVnt 2026 | #1 AI Wedding & Event Planner in Kolkata & India';
     }
   };
@@ -120,12 +121,12 @@ const App: React.FC = () => {
       {/* Navigation */}
       <nav 
         className={`fixed top-0 w-full z-40 transition-all duration-300 border-b border-white/5 ${
-          scrolled || currentView !== 'home' ? 'bg-star-900/90 backdrop-blur-md py-3 shadow-lg' : 'bg-transparent py-6'
+          scrolled || currentView !== 'home' || isMobileMenuOpen ? 'bg-star-900/95 backdrop-blur-md py-3 shadow-lg' : 'bg-transparent py-6'
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
           <div 
-            className="flex items-center gap-2 cursor-pointer" 
+            className="flex items-center gap-2 cursor-pointer z-50 relative" 
             onClick={() => setCurrentView('home')}
           >
             <span className="text-2xl font-serif font-bold text-white tracking-widest">
@@ -136,6 +137,7 @@ const App: React.FC = () => {
             </span>
           </div>
 
+          {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-8 text-sm font-medium tracking-wide">
             <button 
                 onClick={() => setCurrentView('events')} 
@@ -163,51 +165,60 @@ const App: React.FC = () => {
             </button>
           </div>
 
-          <div className="flex items-center gap-4">
+          {/* Actions */}
+          <div className="flex items-center gap-4 z-50 relative">
+            
+            {/* Mobile Menu Toggle */}
             <button 
-              className="p-2 text-white hover:text-gold-500 transition-colors rounded-full hover:bg-white/5"
-              onClick={() => setIsSearchOpen(true)}
-              aria-label="Search"
+              className="md:hidden text-white hover:text-gold-500 transition-colors p-1"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
-              <Search size={20} />
+              {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
             </button>
-            <button className="md:hidden text-white">
-              <Menu size={24} />
-            </button>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="hidden md:flex gap-2"
-              onClick={() => setCurrentView(currentView === 'profile' ? 'home' : 'profile')}
-            >
-              <User size={16} />
-              {currentView === 'profile' ? 'Home' : 'My Profile'}
+
+            <Button size="sm" className="hidden md:flex" onClick={() => handleQuickBooking(500000, EventType.WEDDING)}>
+                Book Now
             </Button>
-            {currentView !== 'profile' && (
-               <Button size="sm" className="hidden md:flex" onClick={() => handleQuickBooking(500000, EventType.WEDDING)}>
-                 Book Now
-               </Button>
-            )}
           </div>
         </div>
       </nav>
 
-      {/* --- PAGE ROUTING --- */}
-
-      {currentView === 'profile' && (
-        <ProfileView 
-          events={savedEvents} 
-          onDelete={handleDeleteEvent} 
-          onBook={handleOpenBooking}
-          onClose={() => setCurrentView('home')} 
-        />
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-30 bg-star-900/95 backdrop-blur-xl pt-28 px-8 md:hidden flex flex-col gap-8 animate-[fadeIn_0.3s_ease-out] overflow-y-auto">
+           {/* Menu Items */}
+           <div className="flex flex-col gap-2">
+             <button onClick={() => setCurrentView('home')} className={`text-3xl font-serif font-bold text-left py-4 border-b border-white/5 transition-all ${currentView === 'home' ? 'text-gold-500 pl-4' : 'text-white hover:text-gold-500'}`}>Home</button>
+             <button onClick={() => setCurrentView('events')} className={`text-3xl font-serif font-bold text-left py-4 border-b border-white/5 transition-all ${currentView === 'events' ? 'text-gold-500 pl-4' : 'text-white hover:text-gold-500'}`}>Events</button>
+             <button onClick={() => setCurrentView('moniqui')} className={`text-3xl font-serif font-bold text-left py-4 border-b border-white/5 transition-all ${currentView === 'moniqui' ? 'text-gold-500 pl-4' : 'text-white hover:text-gold-500'}`}>Moniqui Gifting</button>
+             <button onClick={() => setCurrentView('ftaura')} className={`text-3xl font-serif font-bold text-left py-4 border-b border-white/5 transition-all ${currentView === 'ftaura' ? 'text-gold-500 pl-4' : 'text-white hover:text-gold-500'}`}>FTAura Style</button>
+             <button onClick={() => setCurrentView('aura')} className={`text-3xl font-serif font-bold text-left py-4 border-b border-white/5 transition-all flex items-center gap-3 ${currentView === 'aura' ? 'text-gold-500 pl-4' : 'text-white hover:text-gold-500'}`}>
+                Aura+ AI <span className="animate-pulse text-gold-500">●</span>
+             </button>
+           </div>
+           
+           <div className="mt-4 flex flex-col gap-4 mb-12">
+              <Button 
+                  size="lg"
+                  onClick={() => { handleQuickBooking(500000, EventType.WEDDING); setIsMobileMenuOpen(false); }}
+                  className="w-full justify-center"
+              >
+                  Book Now
+              </Button>
+           </div>
+        </div>
       )}
+
+      {/* --- PAGE ROUTING --- */}
 
       {/* EVENTS PAGE */}
       {currentView === 'events' && (
          <div className="animate-[fadeIn_0.5s_ease-out]">
             <div className="pt-24 min-h-[50vh]">
-                 <EventsSection onBookNow={handleQuickBooking} />
+                 <EventsSection 
+                    onBookNow={handleQuickBooking} 
+                    onAskAura={() => setCurrentView('aura')} 
+                 />
             </div>
             <section className="py-16 bg-star-800/50 text-center">
                 <div className="max-w-2xl mx-auto px-6">
@@ -299,7 +310,10 @@ const App: React.FC = () => {
           </header>
 
           {/* Home still previews sections for discovery, but Navbar goes to dedicated pages */}
-          <EventsSection onBookNow={handleQuickBooking} />
+          <EventsSection 
+            onBookNow={handleQuickBooking} 
+            onAskAura={() => setCurrentView('aura')} 
+          />
           <MoniquiSection />
           <FTAuraSection />
           <AuraSection />
@@ -361,7 +375,6 @@ const App: React.FC = () => {
 
       {/* Global Components */}
       <AuraAssistant />
-      <SearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
 
       <BookingForm 
         isOpen={isBookingOpen} 

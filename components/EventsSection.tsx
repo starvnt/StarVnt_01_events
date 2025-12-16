@@ -54,9 +54,10 @@ const QUICK_FILTERS = ['Wedding', 'Corporate', 'Music', 'MICE'];
 
 interface EventsSectionProps {
   onBookNow?: (budget: number, type: EventType) => void;
+  onAskAura?: () => void;
 }
 
-export const EventsSection: React.FC<EventsSectionProps> = ({ onBookNow }) => {
+export const EventsSection: React.FC<EventsSectionProps> = ({ onBookNow, onAskAura }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedEvent, setSelectedEvent] = useState<typeof EVENTS_DATA[0] | null>(null);
 
@@ -292,7 +293,7 @@ export const EventsSection: React.FC<EventsSectionProps> = ({ onBookNow }) => {
         
         <div className="mt-12 text-center">
             <p className="text-slate-500 text-sm mb-4">Not sure what you need?</p>
-            <Button className="gap-2">
+            <Button className="gap-2" onClick={onAskAura}>
                 Ask Aura+ to Recommend <ArrowRight size={16} />
             </Button>
         </div>
