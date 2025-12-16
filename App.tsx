@@ -5,12 +5,13 @@ import { Button } from './components/Button';
 import { AuraAssistant } from './components/AuraAssistant';
 import { BudgetCalculator } from './components/BudgetCalculator';
 import { EventsSection } from './components/EventsSection';
+import { EventsPage } from './components/EventsPage'; // Imported EventsPage
 import { MoniquiSection } from './components/MoniquiSection';
 import { FTAuraSection } from './components/FTAuraSection';
 import { AuraSection } from './components/AuraSection';
 import { BookingForm } from './components/BookingForm';
 import { FooterDirectory } from './components/FooterDirectory';
-import { LoadingScreen } from './components/LoadingScreen'; // Imported Loader
+import { LoadingScreen } from './components/LoadingScreen';
 import { SEO } from './components/SEO';
 import { SavedEvent, EventType } from './types';
 import { initEmailService } from './services/emailService';
@@ -213,23 +214,10 @@ const App: React.FC = () => {
 
       {/* EVENTS PAGE */}
       {currentView === 'events' && (
-         <div className="animate-[fadeIn_0.5s_ease-out]">
-            <div className="pt-24 min-h-[50vh]">
-                 <EventsSection 
-                    onBookNow={handleQuickBooking} 
-                    onAskAura={() => setCurrentView('aura')} 
-                 />
-            </div>
-            <section className="py-16 bg-star-800/50 text-center">
-                <div className="max-w-2xl mx-auto px-6">
-                    <h3 className="text-2xl font-serif font-bold text-white mb-4">Complete Your Experience</h3>
-                    <div className="flex justify-center gap-4">
-                        <Button variant="outline" onClick={() => setCurrentView('moniqui')}>Explore Gifting</Button>
-                        <Button variant="outline" onClick={() => setCurrentView('ftaura')}>Explore Style</Button>
-                    </div>
-                </div>
-            </section>
-         </div>
+         <EventsPage 
+            onBookNow={handleQuickBooking} 
+            onNavigate={setCurrentView}
+         />
       )}
 
       {/* MONIQUI PAGE */}

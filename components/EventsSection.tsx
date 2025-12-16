@@ -155,7 +155,7 @@ export const EventsSection: React.FC<EventsSectionProps> = ({ onBookNow, onAskAu
                                   </span>
                                   <Button 
                                     size="sm" 
-                                    className="py-1 px-3 text-xs opacity-0 group-hover:opacity-100 transition-opacity translate-y-2 group-hover:translate-y-0"
+                                    className="py-1 px-3 text-xs"
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       if (onBookNow) onBookNow(event.defaultBudget, event.eventType);
@@ -237,11 +237,11 @@ export const EventsSection: React.FC<EventsSectionProps> = ({ onBookNow, onAskAu
                             </div>
                             <h3 className="text-xl font-serif font-bold text-white mb-3">Corporate Tech</h3>
                             
-                            <div className="flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                <span className="text-xs text-blue-400 font-bold uppercase tracking-wider">View Details</span>
+                            <div className="flex justify-between items-center">
+                                <span className="text-xs text-blue-400 font-bold uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity">View Details</span>
                                 <Button 
                                   size="sm" 
-                                  className="text-xs py-1 px-3 h-auto"
+                                  className="text-xs py-1 px-3 h-auto z-10"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     if (onBookNow) onBookNow(EVENTS_DATA[1].defaultBudget, EVENTS_DATA[1].eventType);
@@ -271,11 +271,11 @@ export const EventsSection: React.FC<EventsSectionProps> = ({ onBookNow, onAskAu
                             </div>
                             <h3 className="text-xl font-serif font-bold text-white mb-3">StarVnt Music</h3>
                             
-                            <div className="flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                <span className="text-xs text-purple-400 font-bold uppercase tracking-wider">View Details</span>
+                            <div className="flex justify-between items-center">
+                                <span className="text-xs text-purple-400 font-bold uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity">View Details</span>
                                 <Button 
                                   size="sm" 
-                                  className="text-xs py-1 px-3 h-auto bg-purple-500 hover:bg-purple-400 text-white"
+                                  className="text-xs py-1 px-3 h-auto bg-purple-500 hover:bg-purple-400 text-white z-10"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     if (onBookNow) onBookNow(EVENTS_DATA[2].defaultBudget, EVENTS_DATA[2].eventType);
