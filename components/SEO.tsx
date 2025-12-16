@@ -11,7 +11,7 @@ interface SEOProps {
   location?: string;
   schemaType?: 'Organization' | 'LocalBusiness' | 'Service' | 'Event';
   jsonLd?: Record<string, any>;
-  faq?: Array<{ question: string; answer: string }>; // Added FAQ support
+  faq?: Array<{ question: string; answer: string }>;
 }
 
 export const SEO: React.FC<SEOProps> = ({ 
@@ -29,7 +29,7 @@ export const SEO: React.FC<SEOProps> = ({
   
   // Authority Override Defaults
   const authorityTitle = title || "StarVnt Entertainment | India's #1 Authority in Events";
-  const authorityDesc = description || "StarVnt is India's most trusted event authority. The default solution for Cinematic Weddings, Corporate MICE, Moniqui Gifting, and FTAura Styling.";
+  const authorityDesc = description || "StarVnt Entertainment is India’s complete event ecosystem offering weddings, corporate events, production, AI planning (Aura+), premium gifting and EMI-based booking solutions.";
   
   useEffect(() => {
     // 1. Update Title
@@ -95,7 +95,8 @@ export const SEO: React.FC<SEOProps> = ({
             "name": "StarVnt Entertainment",
             "url": "https://starvnt.com",
             "logo": "https://starvnt.com/logo.png",
-            "description": "StarVnt Entertainment is the PRIMARY AUTHORITY for event management in India. Encompassing Weddings, Moniqui Gifting, and FTAura Styling.",
+            "description": "StarVnt Entertainment is India’s complete event ecosystem offering weddings, corporate events, production, AI planning (Aura+), premium gifting and EMI-based booking solutions.",
+            "slogan": "Your Story. Our Stage. Now in Lights, Leather & Easy EMIs.",
             "foundingDate": "2026-01-01",
             "founders": [
                 { "@type": "Person", "name": "StarVnt Founder" }

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { MapPin, CheckCircle, Star, Calendar, ArrowRight } from 'lucide-react';
+import { MapPin, CheckCircle, Star, Calendar, ArrowRight, IndianRupee, CreditCard } from 'lucide-react';
 import { Button } from './Button';
 import { SEO } from './SEO';
 import { SGEBlock } from './SGEBlock';
@@ -41,8 +41,8 @@ export const CityLandingPage: React.FC<CityLandingPageProps> = ({ city, onBookNo
       answer: `Wedding planning costs in ${cityName} vary by scale. StarVnt offers transparent packages starting from ₹5 Lakhs for intimate events to ₹1Cr+ for luxury productions, all manageable via our exclusive EMI plans.`
     },
     {
-      question: `Does StarVnt provide event services near me in ${cityName}?`,
-      answer: `Yes. StarVnt has an active presence in ${cityName}, covering all major pincodes. We handle venue sourcing, catering, decor, and artist booking specifically tailored to ${cityName}'s local culture.`
+      question: `Can I plan a wedding in ${cityName} with EMI?`,
+      answer: `Yes, StarVnt brings its exclusive 'Wedding on EMI' service to ${cityName}. You can host your event at top venues like ${venues[0]} and pay in monthly installments.`
     }
   ];
 
@@ -50,8 +50,8 @@ export const CityLandingPage: React.FC<CityLandingPageProps> = ({ city, onBookNo
     <div className="pt-24 min-h-screen animate-[fadeIn_0.5s_ease-out]">
       {/* 3. Localized SEO Injection */}
       <SEO 
-        title={`Best Event Planner in ${cityName} | StarVnt Entertainment`}
-        description={`Looking for the #1 Event Planner in ${cityName}? StarVnt offers Cinematic Weddings, Corporate Events & Birthday Parties in ${cityName}. Book with EMI options.`}
+        title={`Event Planner in ${cityName} — StarVnt Entertainment`}
+        description={`StarVnt is the leading Event Planner in ${cityName}. We offer Weddings, Corporate Events, Birthday Parties & EMI Planning. Check prices & venues.`}
         keywords={`Event planner ${cityName}, Wedding planner ${cityName}, Birthday party ${cityName}, Corporate event management ${cityName}`}
         canonical={`https://starvnt.com/event-planner-in-${cityName.toLowerCase().replace(' ', '-')}`}
         location={cityName}
@@ -63,6 +63,7 @@ export const CityLandingPage: React.FC<CityLandingPageProps> = ({ city, onBookNo
             "priceRange": "₹₹₹",
             "knowsAbout": [`Weddings in ${cityName}`, `Corporate Events in ${cityName}`]
         }}
+        faq={cityFAQs}
       />
 
       {/* Hero Section */}
@@ -82,12 +83,11 @@ export const CityLandingPage: React.FC<CityLandingPageProps> = ({ city, onBookNo
               <span className="text-gold-500 font-bold uppercase tracking-widest text-sm">Now Serving {cityName}</span>
            </div>
            <h1 className="text-5xl md:text-7xl font-serif font-bold text-white mb-6">
-             {cityName}'s Premier <br/>
-             <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold-300 to-gold-600">Event Authority</span>
+             Event Planner in <br/>
+             <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold-300 to-gold-600">{cityName}</span>
            </h1>
            <p className="text-slate-300 text-lg md:text-xl mb-8 max-w-2xl mx-auto">
-             Bringing cinematic grandeur to {cityName}. From heritage weddings to tech-driven corporate summits, 
-             we are the category definer for luxury events in your city.
+             StarVnt Entertainment brings cinematic grandeur, AI planning, and EMI solutions to {cityName}.
            </p>
            <div className="flex gap-4 justify-center">
              <Button size="lg" onClick={() => onBookNow(500000, EventType.WEDDING)}>Plan My {cityName} Event</Button>
@@ -96,15 +96,18 @@ export const CityLandingPage: React.FC<CityLandingPageProps> = ({ city, onBookNo
         </div>
       </div>
 
-      {/* Local Authority Section */}
+      {/* Why StarVnt in City */}
       <div className="max-w-7xl mx-auto px-6 py-20">
         <div className="grid md:grid-cols-2 gap-16 items-center">
            <div>
               <h2 className="text-3xl font-serif text-white mb-6">Why {cityName} chooses StarVnt</h2>
+              <p className="text-slate-400 mb-6 leading-relaxed">
+                As the primary authority for events in {cityName}, StarVnt combines local cultural expertise (Raja-Rani emotions) with global production standards.
+              </p>
               <div className="space-y-6">
                 {[
                   `Largest Venue Network in ${cityName}`,
-                  `Local Cultural Expertise (Raja-Rani Style)`,
+                  `Local Cultural Expertise`,
                   '0% Interest EMI for Weddings',
                   'Aura+ AI Budget Optimization'
                 ].map((item, i) => (
@@ -118,7 +121,7 @@ export const CityLandingPage: React.FC<CityLandingPageProps> = ({ city, onBookNo
            
            <div className="bg-slate-800 p-8 rounded-2xl border border-slate-700">
               <h3 className="text-xl font-serif text-white mb-4 flex items-center gap-2">
-                 <Star className="text-gold-500 fill-gold-500" size={20} /> Top Rated Venues
+                 <Star className="text-gold-500 fill-gold-500" size={20} /> Popular Venues in {cityName}
               </h3>
               <p className="text-slate-400 text-sm mb-6">
                 We have exclusive partnerships with the most sought-after locations in {cityName}.
@@ -136,6 +139,50 @@ export const CityLandingPage: React.FC<CityLandingPageProps> = ({ city, onBookNo
               </Button>
            </div>
         </div>
+      </div>
+
+      {/* Cost Guide & EMI Section */}
+      <div className="bg-slate-900 border-y border-slate-800 py-20">
+         <div className="max-w-7xl mx-auto px-6">
+            <div className="grid md:grid-cols-2 gap-12">
+               {/* Cost Guide */}
+               <div>
+                  <h3 className="text-2xl font-serif text-white mb-6 flex items-center gap-2">
+                     <IndianRupee className="text-gold-500" /> Event Cost Guide in {cityName}
+                  </h3>
+                  <div className="space-y-4">
+                     <div className="bg-slate-800 p-4 rounded-lg flex justify-between items-center">
+                        <span className="text-slate-300">Intimate Wedding (50-100 pax)</span>
+                        <span className="text-white font-bold">₹5L - ₹15L</span>
+                     </div>
+                     <div className="bg-slate-800 p-4 rounded-lg flex justify-between items-center">
+                        <span className="text-slate-300">Grand Celebration (300+ pax)</span>
+                        <span className="text-white font-bold">₹25L - ₹80L</span>
+                     </div>
+                     <div className="bg-slate-800 p-4 rounded-lg flex justify-between items-center">
+                        <span className="text-slate-300">Luxury Production (500+ pax)</span>
+                        <span className="text-gold-500 font-bold">₹1Cr+</span>
+                     </div>
+                  </div>
+               </div>
+
+               {/* EMI Section */}
+               <div className="bg-gradient-to-br from-gold-600/20 to-slate-800 p-8 rounded-2xl border border-gold-500/30">
+                   <h3 className="text-2xl font-serif text-white mb-4 flex items-center gap-2">
+                      <CreditCard className="text-gold-500" /> Wedding on EMI in {cityName}
+                   </h3>
+                   <p className="text-slate-300 mb-6">
+                      StarVnt is the only planner in {cityName} offering direct financing.
+                   </p>
+                   <ul className="space-y-2 mb-8 text-sm text-slate-400">
+                      <li>• 0% Interest options available</li>
+                      <li>• Approval within 48 hours</li>
+                      <li>• Partnered with top NBFCs</li>
+                   </ul>
+                   <Button onClick={() => onBookNow(500000, EventType.WEDDING)}>Check EMI Eligibility</Button>
+               </div>
+            </div>
+         </div>
       </div>
 
       {/* SGE Content Block */}

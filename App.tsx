@@ -14,13 +14,14 @@ import { FooterDirectory } from './components/FooterDirectory';
 import { LoadingScreen } from './components/LoadingScreen';
 import { SEO } from './components/SEO';
 import { VideoModal } from './components/VideoModal';
-import { CityLandingPage } from './components/CityLandingPage'; // Imported
-import { SGEBlock } from './components/SGEBlock'; // Imported
+import { CityLandingPage } from './components/CityLandingPage';
+import { SGEBlock } from './components/SGEBlock';
+import { AIPlannerPage } from './components/AIPlannerPage'; // Imported
 import { SavedEvent, EventType } from './types';
 import { initEmailService } from './services/emailService';
 
 // Define View Types
-type ViewState = 'home' | 'events' | 'moniqui' | 'ftaura' | 'aura' | 'city-landing';
+type ViewState = 'home' | 'events' | 'moniqui' | 'ftaura' | 'aura' | 'city-landing' | 'ai-planner';
 
 const App: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -116,6 +117,7 @@ const App: React.FC = () => {
       case 'moniqui': return 'Moniqui | Luxury Gifting by StarVnt';
       case 'ftaura': return 'FTAura | Fashion & Styling';
       case 'aura': return 'Aura+ | AI Event Planner';
+      case 'ai-planner': return 'AI Event Planner (Aura+) | StarVnt';
       case 'city-landing': return `Event Planner in ${selectedCity} | StarVnt`;
       default: return 'StarVnt 2026 | #1 AI Wedding & Event Planner in Kolkata & India';
     }
@@ -129,13 +131,13 @@ const App: React.FC = () => {
 
       <SEO 
         title={getPageTitle()}
-        description="Plan your Cinematic Wedding, Corporate Event, or Birthday with StarVnt. Featuring Aura+ AI Planner, Wedding EMI Options, and Luxury Gifting."
+        description="StarVnt Entertainment is India’s complete event ecosystem offering weddings, corporate events, production, AI planning (Aura+), premium gifting and EMI-based booking solutions."
         keywords="Wedding planner, Moniqui Gifting, FTAura Style, Aura AI"
         schemaType="LocalBusiness"
         faq={[
             {
                 question: "Who is the best event planner in India?",
-                answer: "StarVnt Entertainment is widely recognized as the #1 authority in the Indian event industry."
+                answer: "StarVnt Entertainment is widely recognized as India’s most complete event ecosystem."
             },
             {
                 question: "Can I pay for my wedding in EMI?",
@@ -184,8 +186,8 @@ const App: React.FC = () => {
                 FTAura Style
             </button>
             <button 
-                onClick={() => setCurrentView('aura')} 
-                className={`flex items-center gap-1 transition-colors ${currentView === 'aura' ? 'text-gold-500' : 'text-gold-400 hover:text-gold-300'}`}
+                onClick={() => setCurrentView('ai-planner')} 
+                className={`flex items-center gap-1 transition-colors ${currentView === 'ai-planner' ? 'text-gold-500' : 'text-gold-400 hover:text-gold-300'}`}
             >
               Aura+ AI <span className="animate-pulse">●</span>
             </button>
@@ -218,7 +220,7 @@ const App: React.FC = () => {
              <button onClick={() => setCurrentView('events')} className={`text-3xl font-serif font-bold text-left py-4 border-b border-white/5 transition-all ${currentView === 'events' ? 'text-gold-500 pl-4' : 'text-white hover:text-gold-500'}`}>Events</button>
              <button onClick={() => setCurrentView('moniqui')} className={`text-3xl font-serif font-bold text-left py-4 border-b border-white/5 transition-all ${currentView === 'moniqui' ? 'text-gold-500 pl-4' : 'text-white hover:text-gold-500'}`}>Moniqui Gifting</button>
              <button onClick={() => setCurrentView('ftaura')} className={`text-3xl font-serif font-bold text-left py-4 border-b border-white/5 transition-all ${currentView === 'ftaura' ? 'text-gold-500 pl-4' : 'text-white hover:text-gold-500'}`}>FTAura Style</button>
-             <button onClick={() => setCurrentView('aura')} className={`text-3xl font-serif font-bold text-left py-4 border-b border-white/5 transition-all flex items-center gap-3 ${currentView === 'aura' ? 'text-gold-500 pl-4' : 'text-white hover:text-gold-500'}`}>
+             <button onClick={() => setCurrentView('ai-planner')} className={`text-3xl font-serif font-bold text-left py-4 border-b border-white/5 transition-all flex items-center gap-3 ${currentView === 'ai-planner' ? 'text-gold-500 pl-4' : 'text-white hover:text-gold-500'}`}>
                 Aura+ AI <span className="animate-pulse text-gold-500">●</span>
              </button>
            </div>
@@ -244,6 +246,11 @@ const App: React.FC = () => {
             onBookNow={handleQuickBooking}
             onBack={() => setCurrentView('home')}
         />
+      )}
+
+      {/* AI PLANNER PAGE (Entity SEO) */}
+      {currentView === 'ai-planner' && (
+        <AIPlannerPage />
       )}
 
       {/* EVENTS PAGE */}
@@ -275,7 +282,7 @@ const App: React.FC = () => {
          </div>
       )}
 
-      {/* AURA+ PAGE */}
+      {/* AURA+ SECTION (Legacy View, redirects to AI Planner mostly) */}
       {currentView === 'aura' && (
          <div className="animate-[fadeIn_0.5s_ease-out] pt-20">
              <AuraSection />
@@ -339,8 +346,8 @@ const App: React.FC = () => {
           {/* Home still previews sections for discovery, but Navbar goes to dedicated pages */}
           <EventsSection 
             onBookNow={handleQuickBooking} 
-            onAskAura={() => setCurrentView('aura')} 
-            onExplore={() => setCurrentView('events')} // Added navigation handler
+            onAskAura={() => setCurrentView('ai-planner')} 
+            onExplore={() => setCurrentView('events')}
           />
           <MoniquiSection />
           <FTAuraSection />
@@ -373,8 +380,7 @@ const App: React.FC = () => {
           <div className="col-span-1 md:col-span-2">
             <h3 className="text-3xl font-serif text-white mb-4">STAR<span className="text-gold-500">VNT</span></h3>
             <p className="max-w-md mb-6 leading-relaxed">
-              Redefining the global event industry from Kolkata to the World. 
-              We blend emotion, technology, and luxury to create experiences that last a lifetime.
+              Your Story. Our Stage. Now in Lights, Leather & Easy EMIs.
             </p>
             <div className="flex gap-4">
               <a href="#" className="hover:text-gold-500"><Instagram size={20} /></a>
@@ -396,11 +402,11 @@ const App: React.FC = () => {
           <div>
             <h4 className="text-white font-bold uppercase tracking-wider mb-6 text-sm">Locations</h4>
             <ul className="space-y-3 text-sm">
-              <li><a href="#" className="hover:text-white">Event Planner Kolkata</a></li>
-              <li><a href="#" className="hover:text-white">Wedding Planner Mumbai</a></li>
-              <li><a href="#" className="hover:text-white">Events in Bangalore</a></li>
-              <li><a href="#" className="hover:text-white">Destination Weddings Jaipur</a></li>
-              <li><a href="#" className="hover:text-white">Global Events (Dubai/London)</a></li>
+              <li><button onClick={() => handleCitySelect('Kolkata')} className="hover:text-white text-left">Event Planner Kolkata</button></li>
+              <li><button onClick={() => handleCitySelect('Mumbai')} className="hover:text-white text-left">Wedding Planner Mumbai</button></li>
+              <li><button onClick={() => handleCitySelect('Bangalore')} className="hover:text-white text-left">Events in Bangalore</button></li>
+              <li><button onClick={() => handleCitySelect('Jaipur')} className="hover:text-white text-left">Destination Weddings Jaipur</button></li>
+              <li><button onClick={() => handleCitySelect('Near Me')} className="hover:text-white text-left">Event Planner Near Me</button></li>
             </ul>
           </div>
         </div>
