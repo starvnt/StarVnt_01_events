@@ -38,6 +38,7 @@ export interface SavedEvent {
 export interface BookingSubmission {
   customer_name: string;
   customer_email: string;
+  customer_phone: string;
   event_date: string;
   venue_name: string;
   venue_address: string;

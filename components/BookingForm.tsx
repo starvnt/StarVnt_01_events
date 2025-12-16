@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { X, CheckCircle, Loader, AlertTriangle, WifiOff } from 'lucide-react';
 import { Button } from './Button';
@@ -32,6 +33,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phone: '',
     date: '',
     venue: '',
     address: '',
@@ -46,6 +48,49 @@ export const BookingForm: React.FC<BookingFormProps> = ({
     setError('');
     setIsDemoMode(false);
 
+    // Data Cleaning
+    const cleanEmail = formData.email.trim();
+    const cleanPhone = formData.phone.trim();
+    
+    // Email Validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(cleanEmail)) {
+      setError('Please enter a valid email address (e.g., user@example.com)');
+      setLoading(false);
+      return;
+    }
+
+    // Phone Validation (Indian Format: 10 digits, starts with 6-9)
+    const phoneRegex = /^[6-9]\d{9}$/;
+    if (!phoneRegex.test(cleanPhone)) {
+      setError('Please enter a valid 10-digit mobile number.');
+      setLoading(false);
+      return;
+    }
+
+    // Date Validation (Tomorrow to 2 Years)
+    const inputDate = new Date(formData.date);
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const twoYearsLater = new Date(today);
+    twoYearsLater.setFullYear(twoYearsLater.getFullYear() + 2);
+
+    if (inputDate < tomorrow) {
+      setError('Event date must be from tomorrow onwards.');
+      setLoading(false);
+      return;
+    }
+
+    if (inputDate > twoYearsLater) {
+      setError('Bookings are only open for the next 2 years.');
+      setLoading(false);
+      return;
+    }
+
     if (finalBudget < 9999) {
       setError('Minimum budget requirement is ₹9,999');
       setLoading(false);
@@ -59,7 +104,8 @@ export const BookingForm: React.FC<BookingFormProps> = ({
       const submission: BookingSubmission = {
         booking_id: bookingId,
         customer_name: formData.name,
-        customer_email: formData.email,
+        customer_email: cleanEmail,
+        customer_phone: cleanPhone,
         event_date: formData.date,
         venue_name: formData.venue,
         venue_address: formData.address,
@@ -88,9 +134,19 @@ export const BookingForm: React.FC<BookingFormProps> = ({
     setSuccess(false);
     setIsDemoMode(false);
     setError('');
-    setFormData({ name: '', email: '', date: '', venue: '', address: '', guests: '' });
+    setFormData({ name: '', email: '', phone: '', date: '', venue: '', address: '', guests: '' });
     onClose();
   };
+
+  // Calculate min and max date strings for the date input
+  const now = new Date();
+  const tomorrow = new Date(now);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const minDateStr = tomorrow.toISOString().split('T')[0];
+  
+  const maxDate = new Date(now);
+  maxDate.setFullYear(maxDate.getFullYear() + 2);
+  const maxDateStr = maxDate.toISOString().split('T')[0];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -162,15 +218,27 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs text-slate-400">Email Address</label>
+                  <label className="text-xs text-slate-400">Phone Number</label>
                   <input 
                     required
-                    type="email" 
+                    type="tel" 
+                    placeholder="10-digit mobile"
                     className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white focus:border-gold-500 outline-none"
-                    value={formData.email}
-                    onChange={e => setFormData({...formData, email: e.target.value})}
+                    value={formData.phone}
+                    onChange={e => setFormData({...formData, phone: e.target.value.replace(/\D/g, '').slice(0, 10)})}
                   />
                 </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs text-slate-400">Email Address</label>
+                <input 
+                  required
+                  type="email" 
+                  className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white focus:border-gold-500 outline-none"
+                  value={formData.email}
+                  onChange={e => setFormData({...formData, email: e.target.value})}
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -179,6 +247,8 @@ export const BookingForm: React.FC<BookingFormProps> = ({
                   <input 
                     required
                     type="date" 
+                    min={minDateStr}
+                    max={maxDateStr}
                     className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white focus:border-gold-500 outline-none"
                     value={formData.date}
                     onChange={e => setFormData({...formData, date: e.target.value})}

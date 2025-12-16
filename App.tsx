@@ -10,6 +10,7 @@ import { FTAuraSection } from './components/FTAuraSection';
 import { ProfileView } from './components/ProfileView';
 import { BookingForm } from './components/BookingForm';
 import { SearchOverlay } from './components/SearchOverlay';
+import { FooterDirectory } from './components/FooterDirectory'; // Added SEO Footer
 import { SEO } from './components/SEO';
 import { SavedEvent, EventType } from './types';
 import { initEmailService } from './services/emailService';
@@ -82,61 +83,15 @@ const App: React.FC = () => {
     setIsBookingOpen(true);
   };
 
-  // SCHEMA: Organization & WebSite (The Core Identity)
-  const homeSchema = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "Organization",
-        "@id": "https://starvnt.com/#organization",
-        "name": "StarVnt Entertainment",
-        "url": "https://starvnt.com",
-        "logo": "https://starvnt.com/logo.png",
-        "sameAs": [
-          "https://www.facebook.com/starvnt",
-          "https://www.instagram.com/starvnt",
-          "https://www.youtube.com/starvnt"
-        ],
-        "description": "India’s first AI-powered event production ecosystem launching 2026. Specializing in Cinematic Weddings, Corporate MICE, and Luxury Gifting.",
-        "address": {
-          "@type": "PostalAddress",
-          "addressLocality": "Kolkata",
-          "addressRegion": "WB",
-          "addressCountry": "IN"
-        },
-        "contactPoint": {
-          "@type": "ContactPoint",
-          "telephone": "+91-9000000000",
-          "contactType": "customer service",
-          "areaServed": "IN",
-          "availableLanguage": ["en", "hi", "bn"]
-        }
-      },
-      {
-        "@type": "WebSite",
-        "@id": "https://starvnt.com/#website",
-        "url": "https://starvnt.com",
-        "name": "StarVnt",
-        "description": "AI-Powered Event Planning & Luxury Experiences",
-        "publisher": { "@id": "https://starvnt.com/#organization" },
-        "potentialAction": {
-          "@type": "SearchAction",
-          "target": "https://starvnt.com/search?q={search_term_string}",
-          "query-input": "required name=search_term_string"
-        }
-      }
-    ]
-  };
-
   return (
     <div className="min-h-screen bg-star-900 text-slate-200 selection:bg-gold-500 selection:text-star-900">
       
-      {/* SEO Injection */}
+      {/* SUPER SEO Injection */}
       <SEO 
-        title="StarVnt 2026 | India's #1 AI-Powered Event & Wedding Planner"
-        description="Plan your cinematic wedding, corporate event, or luxury party with StarVnt. Featuring Aura+ AI Planner, EMI options, and Shantiniketan gifting. Launching Jan 1, 2026."
-        keywords="Event planner Kolkata, Wedding planner India, Corporate event management, Birthday decoration, Wedding EMI, Aura AI, StarVnt"
-        schema={homeSchema}
+        title="StarVnt 2026 | #1 AI Wedding & Event Planner in Kolkata & India"
+        description="Plan your Cinematic Wedding, Corporate Event, or Birthday with StarVnt. Featuring Aura+ AI Planner, Wedding EMI Options, and Luxury Gifting. The Future of Events."
+        keywords="Wedding planner Kolkata, Event management company India, Corporate event organizers, Birthday decoration near me, Event EMI, Aura AI, StarVnt, Destination wedding planner"
+        schemaType="LocalBusiness"
       />
 
       {/* Navigation */}
@@ -215,7 +170,7 @@ const App: React.FC = () => {
             <div className="absolute inset-0 z-0">
               <img 
                 src="https://picsum.photos/seed/luxurywedding/1920/1080" 
-                alt="Cinematic Event" 
+                alt="Cinematic Event Production India" 
                 className="w-full h-full object-cover opacity-40 scale-105 animate-[pulse_10s_ease-in-out_infinite]"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-star-900 via-star-900/50 to-transparent"></div>
@@ -231,10 +186,10 @@ const App: React.FC = () => {
                   Memories
                 </span>
               </h1>
-              <p className="text-lg md:text-xl text-slate-300 mb-10 max-w-2xl mx-auto font-light leading-relaxed">
-                India’s first AI-powered event ecosystem. Combining luxury production, 
-                premium gifting, and AI curation to turn your moments into movies.
-              </p>
+              <h2 className="text-lg md:text-xl text-slate-300 mb-10 max-w-2xl mx-auto font-light leading-relaxed">
+                India’s #1 AI-powered event ecosystem. We combine cinematic production, 
+                luxury gifting, and Aura+ Intelligence to create the weddings and events of the future.
+              </h2>
               
               <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
                 <Button size="lg" onClick={() => window.scrollTo({ top: 1000, behavior: 'smooth' })}>
@@ -360,6 +315,9 @@ const App: React.FC = () => {
           <p>&copy; 2026 StarVnt International. All Rights Reserved. Built for the Future.</p>
         </div>
       </footer>
+      
+      {/* Super SEO Directory Mesh */}
+      <FooterDirectory />
 
       {/* Core Application Components */}
       <AuraAssistant />

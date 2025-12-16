@@ -93,6 +93,10 @@ const EMAIL_TEMPLATE = `
             <span class="value">{{guest_count}}</span>
           </div>
           <div class="detail-row">
+            <span class="label">Contact</span>
+            <span class="value">{{customer_phone}}</span>
+          </div>
+          <div class="detail-row">
             <span class="label">Estimated Budget</span>
             <span class="value">{{currency}} {{amount_paid}}</span>
           </div>
@@ -137,6 +141,7 @@ async function sendEmail(data) {
     .replace(/{{venue_name}}/g, data.venue_name || "To Be Confirmed")
     .replace(/{{venue_address}}/g, data.venue_address || "")
     .replace(/{{customer_name}}/g, data.customer_name)
+    .replace(/{{customer_phone}}/g, data.customer_phone || "Not Provided")
     .replace(/{{guest_count}}/g, data.guest_count || "TBD")
     .replace(/{{currency}}/g, "₹")
     .replace(/{{amount_paid}}/g, new Intl.NumberFormat('en-IN').format(data.amount_paid || 0))
