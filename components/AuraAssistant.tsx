@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, X, MessageSquare, Sparkles, Mic } from 'lucide-react';
+import { Send, X, Sparkles } from 'lucide-react';
 import { Chat } from "@google/genai";
 import { createAuraChat, sendMessageToAura } from '../services/geminiService';
 import { ChatMessage } from '../types';
@@ -61,6 +62,12 @@ export const AuraAssistant: React.FC = () => {
       setMessages(prev => [...prev, aiMsg]);
     } catch (error) {
       console.error("Chat error", error);
+      setMessages(prev => [...prev, {
+        id: Date.now().toString(),
+        role: 'model',
+        text: "I'm having trouble connecting right now. Please try again.",
+        timestamp: new Date()
+      }]);
     } finally {
       setIsThinking(false);
     }
@@ -147,12 +154,9 @@ export const AuraAssistant: React.FC = () => {
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyPress}
               placeholder="Ask Aura to plan a wedding..."
-              className="w-full bg-slate-800 text-white rounded-full pl-4 pr-12 py-3 border border-slate-700 focus:border-gold-500 focus:outline-none focus:ring-1 focus:ring-gold-500 placeholder-slate-400 text-sm"
+              className="w-full bg-slate-800 text-white rounded-full pl-4 pr-12 py-3 border focus:outline-none focus:ring-1 transition-all text-sm border-slate-700 focus:border-gold-500 focus:ring-gold-500 placeholder-slate-400"
             />
             <div className="absolute right-2 flex items-center gap-1">
-               <button className="p-2 text-slate-400 hover:text-white transition-colors">
-                  <Mic size={18} />
-               </button>
                <button 
                   onClick={handleSend}
                   disabled={!inputValue.trim()}
@@ -162,9 +166,11 @@ export const AuraAssistant: React.FC = () => {
                 </button>
             </div>
           </div>
-          <p className="text-[10px] text-center text-slate-500 mt-2">
-            StarVnt © 2026. Aura+ can make mistakes.
-          </p>
+          <div className="h-5 mt-2 flex items-center justify-center">
+             <p className="text-[10px] text-slate-500">
+                StarVnt © 2026. Aura+ can make mistakes.
+            </p>
+          </div>
         </div>
       </div>
 

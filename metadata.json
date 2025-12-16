@@ -1,7 +1,5 @@
 {
   "name": "Copy of StarVnt - AI Event Ecosystem",
   "description": "India’s first AI-powered event production ecosystem launching 2026. Integrating events, luxury gifting, and AI planning.",
-  "requestFramePermissions": [
-    "microphone"
-  ]
+  "requestFramePermissions": []
 }

@@ -7,17 +7,23 @@ import { BudgetCalculator } from './components/BudgetCalculator';
 import { EventsSection } from './components/EventsSection';
 import { MoniquiSection } from './components/MoniquiSection';
 import { FTAuraSection } from './components/FTAuraSection';
+import { AuraSection } from './components/AuraSection';
 import { ProfileView } from './components/ProfileView';
 import { BookingForm } from './components/BookingForm';
 import { SearchOverlay } from './components/SearchOverlay';
-import { FooterDirectory } from './components/FooterDirectory'; // Added SEO Footer
+import { FooterDirectory } from './components/FooterDirectory';
+import { LoadingScreen } from './components/LoadingScreen'; // Imported Loader
 import { SEO } from './components/SEO';
 import { SavedEvent, EventType } from './types';
 import { initEmailService } from './services/emailService';
 
+// Define View Types
+type ViewState = 'home' | 'profile' | 'events' | 'moniqui' | 'ftaura' | 'aura';
+
 const App: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
-  const [currentView, setCurrentView] = useState<'home' | 'profile'>('home');
+  const [isLoading, setIsLoading] = useState(true); // Loading State
+  const [currentView, setCurrentView] = useState<ViewState>('home');
   const [savedEvents, setSavedEvents] = useState<SavedEvent[]>([]);
   
   // Booking Modal State
@@ -35,20 +41,24 @@ const App: React.FC = () => {
     };
     window.addEventListener('scroll', handleScroll);
     
-    // Load saved events with Error Handling
+    // Load saved events
     try {
       const stored = localStorage.getItem('starvnt_events');
       if (stored) {
         setSavedEvents(JSON.parse(stored));
       }
     } catch (e) {
-      console.error("Error parsing saved events from local storage:", e);
-      // If data is corrupt, clear it to prevent app crash
+      console.error("Error parsing saved events:", e);
       localStorage.removeItem('starvnt_events');
     }
 
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Reset scroll on view change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentView]);
 
   const handleSaveEvent = (name: string, budget: number, type: EventType) => {
     const newEvent: SavedEvent = {
@@ -59,7 +69,6 @@ const App: React.FC = () => {
       createdAt: new Date().toISOString(),
       status: 'Draft'
     };
-    
     const updated = [newEvent, ...savedEvents];
     setSavedEvents(updated);
     localStorage.setItem('starvnt_events', JSON.stringify(updated));
@@ -83,21 +92,35 @@ const App: React.FC = () => {
     setIsBookingOpen(true);
   };
 
+  // Helper to generate dynamic titles
+  const getPageTitle = () => {
+    switch(currentView) {
+      case 'events': return 'StarVnt | Signature Events & Weddings';
+      case 'moniqui': return 'Moniqui | Luxury Gifting by StarVnt';
+      case 'ftaura': return 'FTAura | Fashion & Styling';
+      case 'aura': return 'Aura+ | AI Event Planner';
+      case 'profile': return 'My Profile | StarVnt';
+      default: return 'StarVnt 2026 | #1 AI Wedding & Event Planner in Kolkata & India';
+    }
+  };
+
   return (
     <div className="min-h-screen bg-star-900 text-slate-200 selection:bg-gold-500 selection:text-star-900">
       
-      {/* SUPER SEO Injection */}
+      {/* Cinematic Loader */}
+      {isLoading && <LoadingScreen onComplete={() => setIsLoading(false)} />}
+
       <SEO 
-        title="StarVnt 2026 | #1 AI Wedding & Event Planner in Kolkata & India"
-        description="Plan your Cinematic Wedding, Corporate Event, or Birthday with StarVnt. Featuring Aura+ AI Planner, Wedding EMI Options, and Luxury Gifting. The Future of Events."
-        keywords="Wedding planner Kolkata, Event management company India, Corporate event organizers, Birthday decoration near me, Event EMI, Aura AI, StarVnt, Destination wedding planner"
+        title={getPageTitle()}
+        description="Plan your Cinematic Wedding, Corporate Event, or Birthday with StarVnt. Featuring Aura+ AI Planner, Wedding EMI Options, and Luxury Gifting."
+        keywords="Wedding planner, Moniqui Gifting, FTAura Style, Aura AI"
         schemaType="LocalBusiness"
       />
 
       {/* Navigation */}
       <nav 
         className={`fixed top-0 w-full z-40 transition-all duration-300 border-b border-white/5 ${
-          scrolled ? 'bg-star-900/90 backdrop-blur-md py-3 shadow-lg' : 'bg-transparent py-6'
+          scrolled || currentView !== 'home' ? 'bg-star-900/90 backdrop-blur-md py-3 shadow-lg' : 'bg-transparent py-6'
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
@@ -114,16 +137,30 @@ const App: React.FC = () => {
           </div>
 
           <div className="hidden md:flex items-center gap-8 text-sm font-medium tracking-wide">
-            {currentView === 'home' && (
-              <>
-                <a href="#events" className="hover:text-gold-500 transition-colors">Events</a>
-                <a href="#moniqui" className="hover:text-gold-500 transition-colors">Moniqui Gift</a>
-                <a href="#ftaura" className="hover:text-gold-500 transition-colors">FTAura Style</a>
-                <a href="#aura" className="text-gold-400 flex items-center gap-1">
-                  Aura+ AI <span className="animate-pulse">●</span>
-                </a>
-              </>
-            )}
+            <button 
+                onClick={() => setCurrentView('events')} 
+                className={`transition-colors ${currentView === 'events' ? 'text-gold-500' : 'hover:text-gold-500'}`}
+            >
+                Events
+            </button>
+            <button 
+                onClick={() => setCurrentView('moniqui')} 
+                className={`transition-colors ${currentView === 'moniqui' ? 'text-gold-500' : 'hover:text-gold-500'}`}
+            >
+                Moniqui Gift
+            </button>
+            <button 
+                onClick={() => setCurrentView('ftaura')} 
+                className={`transition-colors ${currentView === 'ftaura' ? 'text-gold-500' : 'hover:text-gold-500'}`}
+            >
+                FTAura Style
+            </button>
+            <button 
+                onClick={() => setCurrentView('aura')} 
+                className={`flex items-center gap-1 transition-colors ${currentView === 'aura' ? 'text-gold-500' : 'text-gold-400 hover:text-gold-300'}`}
+            >
+              Aura+ AI <span className="animate-pulse">●</span>
+            </button>
           </div>
 
           <div className="flex items-center gap-4">
@@ -141,12 +178,12 @@ const App: React.FC = () => {
               variant="outline" 
               size="sm" 
               className="hidden md:flex gap-2"
-              onClick={() => setCurrentView(currentView === 'home' ? 'profile' : 'home')}
+              onClick={() => setCurrentView(currentView === 'profile' ? 'home' : 'profile')}
             >
               <User size={16} />
-              {currentView === 'home' ? 'My Profile' : 'Home'}
+              {currentView === 'profile' ? 'Home' : 'My Profile'}
             </Button>
-            {currentView === 'home' && (
+            {currentView !== 'profile' && (
                <Button size="sm" className="hidden md:flex" onClick={() => handleQuickBooking(500000, EventType.WEDDING)}>
                  Book Now
                </Button>
@@ -155,18 +192,73 @@ const App: React.FC = () => {
         </div>
       </nav>
 
-      {currentView === 'profile' ? (
+      {/* --- PAGE ROUTING --- */}
+
+      {currentView === 'profile' && (
         <ProfileView 
           events={savedEvents} 
           onDelete={handleDeleteEvent} 
           onBook={handleOpenBooking}
           onClose={() => setCurrentView('home')} 
         />
-      ) : (
+      )}
+
+      {/* EVENTS PAGE */}
+      {currentView === 'events' && (
+         <div className="animate-[fadeIn_0.5s_ease-out]">
+            <div className="pt-24 min-h-[50vh]">
+                 <EventsSection onBookNow={handleQuickBooking} />
+            </div>
+            <section className="py-16 bg-star-800/50 text-center">
+                <div className="max-w-2xl mx-auto px-6">
+                    <h3 className="text-2xl font-serif font-bold text-white mb-4">Complete Your Experience</h3>
+                    <div className="flex justify-center gap-4">
+                        <Button variant="outline" onClick={() => setCurrentView('moniqui')}>Explore Gifting</Button>
+                        <Button variant="outline" onClick={() => setCurrentView('ftaura')}>Explore Style</Button>
+                    </div>
+                </div>
+            </section>
+         </div>
+      )}
+
+      {/* MONIQUI PAGE */}
+      {currentView === 'moniqui' && (
+         <div className="animate-[fadeIn_0.5s_ease-out] pt-20">
+             <MoniquiSection />
+             <div className="bg-star-900 py-16 text-center">
+                <p className="text-slate-400 mb-6">Looking for something else?</p>
+                <Button variant="outline" onClick={() => setCurrentView('home')}>Back to Home</Button>
+             </div>
+         </div>
+      )}
+
+      {/* FTAURA PAGE */}
+      {currentView === 'ftaura' && (
+         <div className="animate-[fadeIn_0.5s_ease-out] pt-20">
+             <FTAuraSection />
+             <div className="bg-star-900 py-16 text-center">
+                <Button variant="outline" onClick={() => setCurrentView('home')}>Back to Home</Button>
+             </div>
+         </div>
+      )}
+
+      {/* AURA+ PAGE */}
+      {currentView === 'aura' && (
+         <div className="animate-[fadeIn_0.5s_ease-out] pt-20">
+             <AuraSection />
+             <div className="bg-star-900 py-12 px-6">
+                <BudgetCalculator 
+                  onSave={handleSaveEvent}
+                  onBookNow={handleQuickBooking} 
+                />
+             </div>
+         </div>
+      )}
+
+      {/* HOME PAGE (Landing) */}
+      {currentView === 'home' && (
         <>
-          {/* Hero Section */}
           <header className="relative min-h-screen flex items-center justify-center overflow-hidden">
-            {/* Background Image with Overlay */}
             <div className="absolute inset-0 z-0">
               <img 
                 src="https://picsum.photos/seed/luxurywedding/1920/1080" 
@@ -192,8 +284,8 @@ const App: React.FC = () => {
               </h2>
               
               <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
-                <Button size="lg" onClick={() => window.scrollTo({ top: 1000, behavior: 'smooth' })}>
-                  Start Planning
+                <Button size="lg" onClick={() => setCurrentView('events')}>
+                  Explore Events
                 </Button>
                 <Button variant="outline" size="lg" className="backdrop-blur-sm bg-star-900/30">
                   Watch The Vision
@@ -206,62 +298,12 @@ const App: React.FC = () => {
             </div>
           </header>
 
-          {/* EVENTS Section */}
-          <EventsSection />
-
-          {/* MONIQUI Section */}
+          {/* Home still previews sections for discovery, but Navbar goes to dedicated pages */}
+          <EventsSection onBookNow={handleQuickBooking} />
           <MoniquiSection />
-
-          {/* FTAURA Section */}
           <FTAuraSection />
+          <AuraSection />
 
-          {/* AURA+ Section */}
-          <section id="aura" className="py-24 bg-star-800 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-gold-500/10 rounded-full blur-3xl"></div>
-            <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
-              <div>
-                <span className="text-gold-500 font-bold uppercase tracking-wider text-sm">Meet Aura+</span>
-                <h2 className="text-4xl font-serif text-white mt-2 mb-6">India's First Luxury <br/> AI Event Curator</h2>
-                <div className="space-y-6 text-slate-300 leading-relaxed">
-                  <p>
-                    Aura+ isn't just a chatbot. It's a relationship builder. It understands the "Raja-Rani" emotion 
-                    behind an Indian wedding and the precision required for a corporate summit.
-                  </p>
-                  <ul className="space-y-3">
-                    <li className="flex items-center gap-3">
-                      <div className="w-1.5 h-1.5 bg-gold-500 rounded-full"></div>
-                      Instant Moodboards & Timelines
-                    </li>
-                    <li className="flex items-center gap-3">
-                      <div className="w-1.5 h-1.5 bg-gold-500 rounded-full"></div>
-                      Real-time Budget Optimization
-                    </li>
-                    <li className="flex items-center gap-3">
-                      <div className="w-1.5 h-1.5 bg-gold-500 rounded-full"></div>
-                      Regional Language Support (Bangla, Hindi, English)
-                    </li>
-                  </ul>
-                  <div className="pt-4">
-                    <p className="text-sm text-slate-400 italic mb-4">"Try asking: 'Plan a Haldi ceremony in Kolkata for 200 people'"</p>
-                  </div>
-                </div>
-              </div>
-              <div className="relative">
-                {/* Abstract visual representation of AI */}
-                <div className="aspect-square rounded-full border border-gold-500/20 relative flex items-center justify-center animate-[spin_20s_linear_infinite]">
-                    <div className="absolute inset-4 rounded-full border border-gold-500/40 border-dashed"></div>
-                </div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center bg-star-900/80 backdrop-blur p-6 rounded-2xl border border-gold-500/30">
-                      <h3 className="text-2xl font-serif text-gold-400">Aura+</h3>
-                      <p className="text-xs uppercase tracking-widest mt-1">Live Demo</p>
-                    </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Budget Calculator */}
           <section className="bg-star-900 py-20 px-6">
             <BudgetCalculator 
               onSave={handleSaveEvent}
@@ -271,7 +313,7 @@ const App: React.FC = () => {
         </>
       )}
 
-      {/* Footer / SEO Heavy */}
+      {/* Footer */}
       <footer className="bg-black text-slate-400 py-16 border-t border-slate-800">
         <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-12">
           
@@ -291,11 +333,10 @@ const App: React.FC = () => {
           <div>
             <h4 className="text-white font-bold uppercase tracking-wider mb-6 text-sm">Services</h4>
             <ul className="space-y-3 text-sm">
-              <li><a href="#" className="hover:text-white">Luxury Weddings</a></li>
-              <li><a href="#" className="hover:text-white">Corporate Events</a></li>
-              <li><a href="#" className="hover:text-white">Moniqui Gifting</a></li>
-              <li><a href="#" className="hover:text-white">Artist Booking</a></li>
-              <li><a href="#" className="hover:text-white">Event EMI Finance</a></li>
+              <li><button onClick={() => setCurrentView('events')} className="hover:text-white">Luxury Weddings</button></li>
+              <li><button onClick={() => setCurrentView('events')} className="hover:text-white">Corporate Events</button></li>
+              <li><button onClick={() => setCurrentView('moniqui')} className="hover:text-white">Moniqui Gifting</button></li>
+              <li><button onClick={() => setCurrentView('events')} className="hover:text-white">Artist Booking</button></li>
             </ul>
           </div>
 
@@ -316,14 +357,12 @@ const App: React.FC = () => {
         </div>
       </footer>
       
-      {/* Super SEO Directory Mesh */}
       <FooterDirectory />
 
-      {/* Core Application Components */}
+      {/* Global Components */}
       <AuraAssistant />
       <SearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
 
-      {/* Booking Modal */}
       <BookingForm 
         isOpen={isBookingOpen} 
         onClose={() => setIsBookingOpen(false)}

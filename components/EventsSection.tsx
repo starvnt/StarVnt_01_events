@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
-import { Sparkles, Gem, Music, ArrowRight, Search, X, Check } from 'lucide-react';
+import { Sparkles, Gem, Music, ArrowRight, Search, X, Check, CalendarCheck } from 'lucide-react';
 import { Button } from './Button';
+import { EventType } from '../types';
 
 // Define event data for filtering and dynamic rendering
 const EVENTS_DATA = [
@@ -16,8 +17,8 @@ const EVENTS_DATA = [
     icon: Sparkles,
     accentColor: 'text-gold-500',
     hoverBorder: 'hover:border-gold-500',
-    hasButton: true,
-    buttonText: 'Plan My Wedding'
+    eventType: EventType.WEDDING,
+    defaultBudget: 2500000
   },
   {
     id: 'corporate',
@@ -30,7 +31,8 @@ const EVENTS_DATA = [
     icon: Gem,
     accentColor: 'text-blue-400',
     hoverBorder: 'hover:border-blue-500',
-    hasButton: false
+    eventType: EventType.CORPORATE,
+    defaultBudget: 800000
   },
   {
     id: 'music',
@@ -43,13 +45,18 @@ const EVENTS_DATA = [
     icon: Music,
     accentColor: 'text-purple-400',
     hoverBorder: 'hover:border-purple-500',
-    hasButton: false
+    eventType: EventType.CONCERT,
+    defaultBudget: 200000
   }
 ];
 
 const QUICK_FILTERS = ['Wedding', 'Corporate', 'Music', 'MICE'];
 
-export const EventsSection: React.FC = () => {
+interface EventsSectionProps {
+  onBookNow?: (budget: number, type: EventType) => void;
+}
+
+export const EventsSection: React.FC<EventsSectionProps> = ({ onBookNow }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedEvent, setSelectedEvent] = useState<typeof EVENTS_DATA[0] | null>(null);
 
@@ -133,16 +140,29 @@ export const EventsSection: React.FC = () => {
                                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-60 group-hover:opacity-80"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-star-900 via-star-900/20 to-transparent"></div>
-                            <div className="absolute bottom-0 left-0 p-6">
+                            <div className="absolute bottom-0 left-0 p-6 w-full">
                                 <div className={`flex items-center gap-2 mb-2 ${event.accentColor}`}>
                                     <event.icon size={18} />
                                     <span className="uppercase tracking-widest text-[10px] font-bold">{event.subtitle}</span>
                                 </div>
                                 <h3 className="text-2xl font-serif font-bold text-white mb-2">{event.title}</h3>
-                                <p className="text-slate-300 text-sm line-clamp-3 mb-4">{event.description}</p>
-                                <span className="text-gold-500 text-xs font-bold uppercase tracking-wider flex items-center gap-1 group-hover:translate-x-2 transition-transform">
-                                    View Details <ArrowRight size={12} />
-                                </span>
+                                <p className="text-slate-300 text-sm line-clamp-2 mb-4">{event.description}</p>
+                                
+                                <div className="flex items-center justify-between mt-4">
+                                  <span className="text-gold-500 text-xs font-bold uppercase tracking-wider flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                                      Details <ArrowRight size={12} />
+                                  </span>
+                                  <Button 
+                                    size="sm" 
+                                    className="py-1 px-3 text-xs opacity-0 group-hover:opacity-100 transition-opacity translate-y-2 group-hover:translate-y-0"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (onBookNow) onBookNow(event.defaultBudget, event.eventType);
+                                    }}
+                                  >
+                                    Quick Book
+                                  </Button>
+                                </div>
                             </div>
                         </div>
                     ))
@@ -169,7 +189,7 @@ export const EventsSection: React.FC = () => {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-star-900 via-transparent to-transparent"></div>
                     
-                    <div className="absolute bottom-0 left-0 p-8">
+                    <div className="absolute bottom-0 left-0 p-8 w-full">
                         <div className="flex items-center gap-2 mb-2 text-gold-500">
                             <Sparkles size={20} />
                             <span className="uppercase tracking-widest text-xs font-bold">The Flagship</span>
@@ -178,9 +198,20 @@ export const EventsSection: React.FC = () => {
                         <p className="text-slate-300 max-w-md mb-6 line-clamp-2 md:line-clamp-none">
                             From the Haldi to the Reception, we turn your "Raja-Rani" moments into a Bollywood masterpiece. Drone films, live direction, and heritage venues.
                         </p>
-                        <Button variant="outline" className="backdrop-blur-sm bg-black/30 border-white/30 text-white hover:bg-white hover:text-star-900 hover:border-white">
-                            View Details
-                        </Button>
+                        
+                        <div className="flex gap-4">
+                           <Button variant="outline" className="backdrop-blur-sm bg-black/30 border-white/30 text-white hover:bg-white hover:text-star-900 hover:border-white">
+                                View Details
+                           </Button>
+                           <Button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (onBookNow) onBookNow(EVENTS_DATA[0].defaultBudget, EVENTS_DATA[0].eventType);
+                              }}
+                           >
+                              <CalendarCheck size={16} className="mr-2" /> Quick Book
+                           </Button>
+                        </div>
                     </div>
                 </div>
 
@@ -198,12 +229,26 @@ export const EventsSection: React.FC = () => {
                             className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-50 group-hover:opacity-70"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-star-900 via-star-900/20 to-transparent"></div>
-                        <div className="absolute bottom-0 left-0 p-6">
+                        <div className="absolute bottom-0 left-0 p-6 w-full">
                             <div className="flex items-center gap-2 mb-1 text-blue-400">
                                 <Gem size={16} />
                                 <span className="uppercase tracking-widest text-[10px] font-bold">MICE & Summits</span>
                             </div>
-                            <h3 className="text-xl font-serif font-bold text-white">Corporate Tech</h3>
+                            <h3 className="text-xl font-serif font-bold text-white mb-3">Corporate Tech</h3>
+                            
+                            <div className="flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <span className="text-xs text-blue-400 font-bold uppercase tracking-wider">View Details</span>
+                                <Button 
+                                  size="sm" 
+                                  className="text-xs py-1 px-3 h-auto"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (onBookNow) onBookNow(EVENTS_DATA[1].defaultBudget, EVENTS_DATA[1].eventType);
+                                  }}
+                                >
+                                  Quick Book
+                                </Button>
+                            </div>
                         </div>
                     </div>
 
@@ -218,12 +263,26 @@ export const EventsSection: React.FC = () => {
                             className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-50 group-hover:opacity-70"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-star-900 via-star-900/20 to-transparent"></div>
-                        <div className="absolute bottom-0 left-0 p-6">
+                        <div className="absolute bottom-0 left-0 p-6 w-full">
                             <div className="flex items-center gap-2 mb-1 text-purple-400">
                                 <Music size={16} />
                                 <span className="uppercase tracking-widest text-[10px] font-bold">Entertainment</span>
                             </div>
-                            <h3 className="text-xl font-serif font-bold text-white">StarVnt Music</h3>
+                            <h3 className="text-xl font-serif font-bold text-white mb-3">StarVnt Music</h3>
+                            
+                            <div className="flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <span className="text-xs text-purple-400 font-bold uppercase tracking-wider">View Details</span>
+                                <Button 
+                                  size="sm" 
+                                  className="text-xs py-1 px-3 h-auto bg-purple-500 hover:bg-purple-400 text-white"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (onBookNow) onBookNow(EVENTS_DATA[2].defaultBudget, EVENTS_DATA[2].eventType);
+                                  }}
+                                >
+                                  Quick Book
+                                </Button>
+                            </div>
                         </div>
                     </div>
 
@@ -283,8 +342,10 @@ export const EventsSection: React.FC = () => {
 
                         <div className="flex justify-end gap-3 pt-4 border-t border-slate-700">
                              <Button variant="ghost" onClick={() => setSelectedEvent(null)}>Close</Button>
-                             <Button onClick={() => alert(`Redirecting to ${selectedEvent.title} Page...`)}>
-                                Learn More <ArrowRight size={16} className="ml-2" />
+                             <Button onClick={() => {
+                                if (onBookNow) onBookNow(selectedEvent.defaultBudget, selectedEvent.eventType);
+                             }}>
+                                Book This Experience <CalendarCheck size={16} className="ml-2" />
                              </Button>
                         </div>
                     </div>
