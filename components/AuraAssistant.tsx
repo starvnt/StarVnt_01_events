@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, X, Sparkles, MessageCircle } from 'lucide-react';
-import { Chat } from "@google/genai";
+import { Send, X, Sparkles, MessageCircle, WifiOff } from 'lucide-react';
 import { createAuraChat, sendMessageToAura } from '../services/geminiService';
 import { ChatMessage } from '../types';
 
@@ -10,7 +9,8 @@ export const AuraAssistant: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isThinking, setIsThinking] = useState(false);
-  const [chatSession, setChatSession] = useState<Chat | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [chatSession, setChatSession] = useState<any | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Initialize Chat
@@ -23,7 +23,7 @@ export const AuraAssistant: React.FC = () => {
       {
         id: 'init-1',
         role: 'model',
-        text: "Namaste! I am Aura+, your personal event curator. I am currently in Demo Mode. \n\nHow can I help you visualize your dream event today?",
+        text: "Namaste! I am Aura+, your personal event curator. \n\nHow can I help you visualize your dream event today?",
         timestamp: new Date()
       }
     ]);
@@ -36,7 +36,14 @@ export const AuraAssistant: React.FC = () => {
   }, [messages, isOpen]);
 
   const handleSend = async () => {
-    if (!inputValue.trim() || !chatSession) return;
+    if (!inputValue.trim()) return;
+
+    // Use existing session or try to create one if missing
+    let activeSession = chatSession;
+    if (!activeSession) {
+       activeSession = createAuraChat();
+       setChatSession(activeSession);
+    }
 
     const userMsg: ChatMessage = {
       id: Date.now().toString(),
@@ -50,7 +57,7 @@ export const AuraAssistant: React.FC = () => {
     setIsThinking(true);
 
     try {
-      const responseText = await sendMessageToAura(chatSession, userMsg.text);
+      const responseText = await sendMessageToAura(activeSession, userMsg.text);
       
       const aiMsg: ChatMessage = {
         id: (Date.now() + 1).toString(),
@@ -80,25 +87,35 @@ export const AuraAssistant: React.FC = () => {
     }
   };
 
+  // Check if we are using the Mock Session (by checking if 'sendMessage' is not native)
+  const isOffline = chatSession && chatSession.constructor.name === "MockChatSession";
+
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end pointer-events-none">
       {/* Chat Window */}
       <div 
         className={`
           pointer-events-auto transition-all duration-500 ease-in-out origin-bottom-right
-          w-[350px] sm:w-[400px] h-[500px] sm:h-[600px] rounded-2xl glass-panel shadow-2xl overflow-hidden flex flex-col mb-4
+          w-[calc(100vw-3rem)] sm:w-[400px] h-[500px] sm:h-[600px] rounded-2xl glass-panel shadow-2xl overflow-hidden flex flex-col mb-4
           ${isOpen ? 'scale-100 opacity-100 translate-y-0' : 'scale-0 opacity-0 translate-y-20'}
         `}
       >
         {/* Header */}
         <div className="bg-gradient-to-r from-gold-600 to-gold-400 p-4 flex justify-between items-center text-star-900">
           <div className="flex items-center gap-2">
-            <div className="p-2 bg-star-900 rounded-full">
+            <div className="p-2 bg-star-900 rounded-full relative">
               <Sparkles size={16} className="text-gold-400" />
+              {isOffline && (
+                  <div className="absolute -bottom-1 -right-1 bg-red-500 rounded-full p-0.5 border border-star-900" title="Offline Mode">
+                      <WifiOff size={8} className="text-white" />
+                  </div>
+              )}
             </div>
             <div>
               <h3 className="font-serif font-bold text-lg leading-tight">Aura+</h3>
-              <p className="text-xs font-medium opacity-80">AI Event Curator (Demo)</p>
+              <p className="text-xs font-medium opacity-80 flex items-center gap-1">
+                 {isOffline ? 'Offline Demo Mode' : 'AI Event Curator'}
+              </p>
             </div>
           </div>
           <button onClick={() => setIsOpen(false)} className="hover:bg-star-900/10 p-1 rounded-full transition-colors">
@@ -153,7 +170,7 @@ export const AuraAssistant: React.FC = () => {
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyPress}
-              placeholder="Ask Aura to plan a wedding..."
+              placeholder={isOffline ? "Ask about Weddings, Costs, or Contacts..." : "Ask Aura to plan a wedding..."}
               className="w-full bg-slate-800 text-white rounded-full pl-4 pr-12 py-3 border focus:outline-none focus:ring-1 transition-all text-sm border-slate-700 focus:border-gold-500 focus:ring-gold-500 placeholder-slate-400"
             />
             <div className="absolute right-2 flex items-center gap-1">
@@ -168,7 +185,7 @@ export const AuraAssistant: React.FC = () => {
           </div>
           <div className="mt-3 text-center">
              <p className="text-[10px] text-orange-400 font-medium bg-orange-900/20 py-1.5 px-3 rounded border border-orange-500/20 inline-flex items-center gap-1">
-                ⚠️ Aura+ is in demo mode. For bookings, 
+                ⚠️ Aura+ is in {isOffline ? 'Offline' : 'Demo'} mode. For bookings, 
                 <a 
                   href="https://wa.me/917044198505" 
                   target="_blank" 
